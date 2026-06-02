@@ -10,6 +10,8 @@ import { MuhelyComponent } from './features/muhely/muhely.component';
 import { NavbarComponent } from './features/navbar/navbar.component';
 import { ProgramComponent } from './features/program/program.component';
 import { ProfilComponent } from './features/profil/profil.component';
+import { MenuComponent } from './features/menu/menu.component';
+import { LoginComponent } from './features/login/login.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { ProfilComponent } from './features/profil/profil.component';
     MuhelyComponent,
     NavbarComponent,
     ProgramComponent,
-    ProfilComponent
+    ProfilComponent,
+    MenuComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
