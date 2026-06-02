@@ -1,0 +1,76 @@
+.program-container
+  padding: 20px
+  padding-top: 40px
+
+.page-title
+  color: #28164A // Sötétlila
+  font-size: 28px
+  margin-bottom: 24px
+  font-weight: 700
+
+.day-section
+  margin-bottom: 36px
+
+.day-title
+  color: #19A7A6 // Ciánkék a napok kiemelésére
+  font-size: 22px
+  margin-bottom: 20px
+  border-bottom: 2px solid #e0e0e0
+  padding-bottom: 8px
+  font-weight: 600
+
+// Az idővonal (timeline) alapja
+.timeline
+  position: relative
+  padding-left: 24px // Helyet hagyunk a vonalnak bal oldalt
+
+  // A függőleges vonal
+  &::before
+    content: ''
+    position: absolute
+    left: 5px
+    top: 8px
+    bottom: 0
+    width: 2px
+    background-color: #D91668 // Magenta vonal
+
+.timeline-item
+  position: relative
+  margin-bottom: 24px
+
+  // Az idővonalon lévő pöttyök
+  &::before
+    content: ''
+    position: absolute
+    left: -24.5px
+    top: 5px
+    width: 12px
+    height: 12px
+    border-radius: 50%
+    background-color: #D91668 // Magenta pötty
+    border: 2px solid #ffffff // Fehér keret, hogy kiugorjon a vonalból
+    box-shadow: 0 0 0 1px #D91668 // Egy extra apró keret a szép dizájnért
+
+.time
+  font-size: 14px
+  font-weight: 700
+  color: #28164A // Sötétlila az időpontnak
+  margin-bottom: 4px
+
+.event
+  font-size: 16px
+  color: #444444
+  line-height: 1.4
+  font-weight: 500
+
+.location
+  font-size: 13px
+  color: #888888
+  margin-top: 4px
+  display: flex
+  align-items: center
+  gap: 4px
+
+  .material-icons
+    font-size: 14px
+    color: #19A7A6 // Kis ciánkék helyszín ikon
