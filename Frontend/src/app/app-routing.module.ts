@@ -20,8 +20,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'eloadas', component: EloadasComponent },
   { path: 'info', component: InfoComponent },
-  { path: '', redirectTo: '/info', pathMatch: 'full' },
-  { path: '**', redirectTo: '/info' }
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];
 
 @NgModule({

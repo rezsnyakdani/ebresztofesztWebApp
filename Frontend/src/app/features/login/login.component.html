@@ -1,1 +1,33 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-content">
+    
+    <div class="header-section">
+      <h1 class="app-title">Ébresztő Fesztivál</h1>
+      <p class="subtitle">Jelentkezz be a folytatáshoz!</p>
+    </div>
+
+    <div class="form-section">
+      
+      <div class="input-group">
+        <label for="fullname">Teljes név</label>
+        <div class="input-wrapper">
+          <span class="material-icons">person</span>
+          <input type="text" id="fullname" placeholder="Pl. Minta János">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Jelszó</label>
+        <div class="input-wrapper">
+          <span class="material-icons">lock</span>
+          <input type="password" id="password" placeholder="••••••••">
+        </div>
+      </div>
+
+      <button class="btn-login" routerLink="/info">
+        Bejelentkezés
+      </button>
+      
+    </div>
+  </div>
+</div>

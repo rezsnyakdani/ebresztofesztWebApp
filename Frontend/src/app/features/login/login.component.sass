@@ -1,0 +1,97 @@
+.login-container
+  // A Varázslat: Rögzítjük a képernyőhöz, kitakarja a navbart és letiltja a görgetést
+  position: fixed 
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  z-index: 9999 // Biztosan minden (a navbar) felett legyen
+  background-color: #ffffff // Fehér háttér
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: 20px
+  box-sizing: border-box
+  overflow: hidden // Nincs görgetés se vízszintesen, se függőlegesen
+
+.login-content
+  width: 100%
+  max-width: 360px
+  display: flex
+  flex-direction: column
+
+.header-section
+  text-align: center
+  margin-bottom: 40px
+
+.app-title
+  color: #28164A // A fesztivál sötétlila arculati színe
+  font-size: 32px
+  font-weight: 800
+  margin: 0
+  margin-bottom: 8px
+  letter-spacing: 0.5px
+
+.subtitle
+  color: #888888 // Szürke alcím, hogy szépen mutasson a fehér háttéren
+  font-size: 15px
+  margin: 0
+
+.form-section
+  display: flex
+  flex-direction: column
+
+.input-group
+  margin-bottom: 24px
+
+  label
+    display: block
+    color: #28164A // Sötétlila felirat az inputok felett
+    font-size: 14px
+    font-weight: 600
+    margin-bottom: 8px
+    padding-left: 4px
+
+.input-wrapper
+  position: relative
+  display: flex
+  align-items: center
+
+  .material-icons
+    position: absolute
+    left: 14px
+    color: #19A7A6 // Ciánkék ikon
+
+  input
+    width: 100%
+    padding: 16px 16px 16px 48px
+    border: 2px solid #e0e0e0 // Halványszürke keret, hogy látszódjon a fehér háttéren
+    border-radius: 12px
+    font-size: 16px
+    color: #28164A
+    background-color: #ffffff
+    box-sizing: border-box
+    transition: all 0.2s
+
+    &:focus
+      outline: none
+      border-color: #D91668 // Magenta keret, ha belekattintasz
+      box-shadow: 0 0 0 4px rgba(217, 22, 104, 0.1)
+
+.btn-login
+  margin-top: 16px
+  background-color: #D91668 // Magenta gomb
+  color: #ffffff
+  border: none
+  padding: 16px
+  border-radius: 12px
+  font-size: 16px
+  font-weight: 700
+  text-transform: uppercase
+  letter-spacing: 1px
+  cursor: pointer
+  box-shadow: 0 4px 15px rgba(217, 22, 104, 0.3)
+  transition: transform 0.1s
+
+  &:active
+    transform: scale(0.98) // Kattintás effekt
