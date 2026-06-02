@@ -1,0 +1,44 @@
+.menu-container
+  padding: 20px
+  padding-top: 40px // Hogy ne csússzon bele a képernyő legtetejébe
+
+.page-title
+  color: #28164A // A fesztivál sötétlila színe
+  font-size: 28px
+  margin-bottom: 24px
+  font-weight: 700
+
+.menu-list
+  display: flex
+  flex-direction: column
+  gap: 12px // A gombok közötti távolság
+
+.menu-item
+  display: flex
+  align-items: center
+  background-color: #ffffff
+  padding: 16px 20px
+  border-radius: 12px
+  text-decoration: none
+  color: #28164A
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04)
+  transition: transform 0.2s, box-shadow 0.2s
+
+  // Koppintás effektek mobilra
+  &:active
+    transform: scale(0.98)
+    background-color: #fcfcfc
+
+  .menu-icon
+    color: #D91668 // A magenta/rózsaszín arculati szín az ikonokhoz
+    margin-right: 16px
+    font-size: 28px
+
+  .menu-text
+    flex: 1 // Kitölti a maradék helyet, így a nyíl a szélre szorul
+    font-size: 16px
+    font-weight: 500
+
+  .chevron
+    color: #19A7A6 // A ciánkék arculati szín a tovább nyílhoz
+    font-size: 24px
