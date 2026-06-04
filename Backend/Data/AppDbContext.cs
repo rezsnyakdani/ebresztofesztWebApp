@@ -14,6 +14,7 @@ namespace Backend.Data
         public DbSet<WorkshopRegistration> WorkshopRegistrations => Set<WorkshopRegistration>();
         public DbSet<Lecture> Lectures => Set<Lecture>();
         public DbSet<ProgramItem> ProgramItems => Set<ProgramItem>();
+        public DbSet<InfoBlock> InfoBlocks => Set<InfoBlock>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,6 +87,14 @@ namespace Backend.Data
             {
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Title).IsRequired();
+            });
+
+            // InfoBlock
+            modelBuilder.Entity<InfoBlock>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Title).IsRequired();
+                e.Property(x => x.Content).IsRequired();
             });
         }
     }
