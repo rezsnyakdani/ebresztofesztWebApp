@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Helpers;
 
 namespace Entities.Models
 {
-    public class Profile
+    public class Profile : IIdEntity
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = null!;

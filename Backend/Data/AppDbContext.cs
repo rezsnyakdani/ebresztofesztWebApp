@@ -61,7 +61,8 @@ namespace Backend.Data
             // WorkshopRegistration
             modelBuilder.Entity<WorkshopRegistration>(e =>
             {
-                e.HasKey(x => new { x.ProfileId, x.WorkshopSessionId });
+                e.HasKey(x => x.Id);
+                e.HasIndex(x => new { x.ProfileId, x.WorkshopSessionId }).IsUnique();
 
                 e.HasOne(x => x.Profile)
                  .WithMany(x => x.Registrations)
