@@ -45,6 +45,16 @@ namespace Logic.Logics
             return await _repository.GetAll().OrderBy(x => x.OrderIndex).ToListAsync();
         }
 
+        public async Task<InfoBlock> GetByIdAsync(string id)
+        {
+            var infoBlock = await _repository.GetOneAsync(id);
+            if (infoBlock == null)
+            {
+                throw new NotFoundException("A keresett információs blokk nem található az adatbázisban.");
+            }
+            return infoBlock;
+        }
+
         public async Task<InfoBlock> CreateAsync(InfoBlockDto dto, string userRole)
         {
             CheckRole(userRole);
@@ -70,7 +80,7 @@ namespace Logic.Logics
 
             return await _repository.UpdateAsync(infoBlock);
         }
-
+        
         public async Task DeleteAsync(string id, string userRole)
         {
             CheckRole(userRole);

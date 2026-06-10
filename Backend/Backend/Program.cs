@@ -1,7 +1,8 @@
 using Backend.Data;
 using Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Logic.Helpers;
+using Logic.Logics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend
 {
@@ -20,6 +21,8 @@ namespace Backend
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddAutoMapper(typeof(MapperProfile));
+            builder.Services.AddScoped<InfoBlockLogic>();
             builder.Services.AddProblemDetails();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
