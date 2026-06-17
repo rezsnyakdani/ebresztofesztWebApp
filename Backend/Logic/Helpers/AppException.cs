@@ -43,4 +43,10 @@ namespace Logic.Helpers
         public ForbiddenException(string message)
             : base("Nincs jogosultság", message, StatusCodes.Status403Forbidden) { }
     }
+
+    public sealed class UnauthorizedException : AppException
+    {
+        public UnauthorizedException(string message)
+            : base("Hitelesítési hiba", message, StatusCodes.Status401Unauthorized) { }
+    }
 }
