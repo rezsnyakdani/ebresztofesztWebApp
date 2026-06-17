@@ -14,6 +14,7 @@ namespace Logic.Helpers
         public MapperProfile()
         {
             CreateMap<InfoBlock, InfoBlockDto>().ReverseMap();
+            CreateMap<Entities.Models.Profile, LoginDto>().ReverseMap();
         }
     }
 }
