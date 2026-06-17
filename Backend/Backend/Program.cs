@@ -26,6 +26,7 @@ namespace Backend
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
+            builder.Services.AddScoped<AuthLogic>();
             builder.Services.AddScoped<InfoBlockLogic>();
             builder.Services.AddProblemDetails();
 
