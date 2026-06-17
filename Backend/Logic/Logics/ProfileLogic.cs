@@ -24,16 +24,29 @@ namespace Logic.Logics
             _mapper = mapper;
         }
 
-        // ================== VALIDÁCIÓS METÓDUSOK ==================
-
         private void CheckOrganizerRole(string userRole)
         {
             if (userRole != "Szervező")
                 throw new ForbiddenException("Csak szervezők végezhetik el ezt a műveletet!");
         }
 
-        private void ValidateProfileData(string email, DateTime birthDate, string gender, string role)
+        private void ValidateProfileData(string name, string email, DateTime birthDate, string gender, string role)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new BadRequestException("A név megadása kötelező!");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new BadRequestException("Az e-mail cím megadása kötelező!");
+
+            if (string.IsNullOrWhiteSpace(gender))
+                throw new BadRequestException("A nem megadása kötelező!");
+
+            if (string.IsNullOrWhiteSpace(role))
+                throw new BadRequestException("A szerepkör megadása kötelező!");
+
+            if (birthDate == default) // A C#-ban egy meg nem adott DateTime értéke 0001.01.01.
+                throw new BadRequestException("A születési dátum megadása kötelező!");
+
             var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
             if (!emailRegex.IsMatch(email))
                 throw new BadRequestException("Az e-mail cím formátuma érvénytelen!");
@@ -73,7 +86,7 @@ namespace Logic.Logics
         public async Task<ProfileGetByIdDto> CreateAsync(ProfileCreateDto dto, string userRole)
         {
             CheckOrganizerRole(userRole);
-            ValidateProfileData(dto.Email, dto.BirthDate, dto.Gender, dto.Role);
+            ValidateProfileData(dto.Name, dto.Email, dto.BirthDate, dto.Gender, dto.Role);
 
             var profile = _mapper.Map<Entities.Models.Profile>(dto);
 
@@ -87,7 +100,7 @@ namespace Logic.Logics
         public async Task<ProfileGetByIdDto> UpdateAsync(string targetId, ProfileUpdateDto dto, string userRole)
         {
             CheckOrganizerRole(userRole);
-            ValidateProfileData(dto.Email, dto.BirthDate, dto.Gender, dto.Role);
+            ValidateProfileData(dto.Name, dto.Email, dto.BirthDate, dto.Gender, dto.Role);
 
             var profile = await _repository.GetOneAsync(targetId);
             if (profile == null) throw new NotFoundException("A felhasználó nem található.");
@@ -111,6 +124,13 @@ namespace Logic.Logics
         {
             if (targetId != currentUserId)
                 throw new ForbiddenException("Csak a saját jelszavadat módosíthatod!");
+
+            if (string.IsNullOrWhiteSpace(dto.OldPassword) ||
+                string.IsNullOrWhiteSpace(dto.NewPassword) ||
+                string.IsNullOrWhiteSpace(dto.NewPasswordConfirm))
+            {
+                throw new BadRequestException("Minden jelszómező kitöltése kötelező!");
+            }
 
             if (dto.NewPassword.Length < 8)
                 throw new BadRequestException("Az új jelszónak legalább 8 karakter hosszúnak kell lennie!");
