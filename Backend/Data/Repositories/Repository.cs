@@ -58,5 +58,12 @@ namespace Data.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<T>> CreateManyAsync(IEnumerable<T> entities, bool saveChanges = true)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            if (saveChanges) await _context.SaveChangesAsync();
+            return entities;
+        }
     }
 }
