@@ -15,6 +15,10 @@ namespace Logic.Helpers
         {
             CreateMap<InfoBlock, InfoBlockDto>().ReverseMap();
             CreateMap<Entities.Models.Profile, LoginDto>().ReverseMap();
+            CreateMap<Entities.Models.Profile, ProfileCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.Profile, ProfileUpdateDto>().ReverseMap();
+            CreateMap<Entities.Models.Profile, ProfileGetAllDto>().ReverseMap();
+            CreateMap<Entities.Models.Profile, ProfileGetByIdDto>().ReverseMap();
         }
     }
 }
