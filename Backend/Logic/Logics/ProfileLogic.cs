@@ -147,5 +147,28 @@ namespace Logic.Logics
             profile.PasswordHash = PasswordHasher.HashPassword(dto.NewPassword);
             await _repository.UpdateAsync(profile);
         }
+
+        public async Task<List<ProfileGetByIdDto>> CreateManyAsync(List<ProfileCreateDto> dtos, string userRole)
+        {
+            CheckOrganizerRole(userRole);
+
+            var profilesToCreate = new List<Entities.Models.Profile>();
+
+            foreach (var dto in dtos)
+            {
+                ValidateProfileData(dto.Name, dto.Email, dto.BirthDate, dto.Gender, dto.Role);
+
+                var profile = _mapper.Map<Entities.Models.Profile>(dto);
+
+                string defaultPassword = dto.BirthDate.ToString("yyyyMMdd");
+                profile.PasswordHash = PasswordHasher.HashPassword(defaultPassword);
+
+                profilesToCreate.Add(profile);
+            }
+
+            await _repository.CreateManyAsync(profilesToCreate);
+
+            return _mapper.Map<List<ProfileGetByIdDto>>(profilesToCreate);
+        }
     }
 }

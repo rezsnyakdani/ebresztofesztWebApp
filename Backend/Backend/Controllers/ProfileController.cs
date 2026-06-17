@@ -65,5 +65,12 @@ namespace Backend.Controllers
             await _logic.ChangePasswordAsync(id, GetUserId(), dto);
             return Ok("A jelszó sikeresen megváltoztatva!");
         }
+
+        [HttpPost("bulk")]
+        public async Task<ActionResult<List<ProfileGetByIdDto>>> CreateMany([FromBody] List<ProfileCreateDto> dtos)
+        {
+            var result = await _logic.CreateManyAsync(dtos, GetUserRole());
+            return Ok(result);
+        }
     }
 }
