@@ -27,6 +27,7 @@ namespace Backend
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
             builder.Services.AddScoped<AuthLogic>();
+            builder.Services.AddScoped<ProfileLogic>();
             builder.Services.AddScoped<InfoBlockLogic>();
             builder.Services.AddProblemDetails();
 
