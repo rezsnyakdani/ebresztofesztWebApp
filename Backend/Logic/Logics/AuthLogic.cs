@@ -30,7 +30,7 @@ namespace Logic.Logics
 
             var user = await _repository.GetAll().FirstOrDefaultAsync(u => u.Name == dto.Name);
 
-            if (user == null || user.PasswordHash != dto.Password)
+            if (user == null || user.PasswordHash != Logic.Helpers.PasswordHasher.HashPassword(dto.Password))
             {
                 throw new UnauthorizedException("Hibás felhasználónév vagy jelszó!");
             }

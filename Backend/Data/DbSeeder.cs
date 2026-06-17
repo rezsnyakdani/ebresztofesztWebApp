@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Entities.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+
+
 
 namespace Backend.Data
 {
@@ -20,7 +24,7 @@ namespace Backend.Data
                     Id = "admin",
                     Name = "admin",
                     Email = "admin@gmail.com",
-                    PasswordHash = "admin",
+                    PasswordHash = HashPassword("admin"),
                     Role = "Szervező",
                     BirthDate = new DateTime(2000, 1, 1),
                     Gender = "admin"
@@ -29,6 +33,13 @@ namespace Backend.Data
                 context.Profiles.Add(admin);
                 context.SaveChanges();
             }
+        }
+
+        public static string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
         }
     }
 }
