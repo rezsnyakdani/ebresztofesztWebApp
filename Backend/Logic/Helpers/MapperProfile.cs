@@ -30,6 +30,9 @@ namespace Logic.Helpers
 
             CreateMap<Entities.Models.ProgramItem, Entities.Dtos.ProgramItemCreateDto>().ReverseMap();
             CreateMap<Entities.Models.ProgramItem, Entities.Dtos.ProgramItemUpdateDto>().ReverseMap();
+
+            CreateMap<Entities.Models.Song, Entities.Dtos.SongCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.Song, Entities.Dtos.SongUpdateDto>().ReverseMap();
         }
     }
 }
