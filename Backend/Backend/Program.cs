@@ -31,6 +31,7 @@ namespace Backend
             builder.Services.AddScoped<InfoBlockLogic>();
             builder.Services.AddScoped<LectureLogic>();
             builder.Services.AddScoped<ProgramItemLogic>();
+            builder.Services.AddScoped<SongLogic>();
             builder.Services.AddProblemDetails();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
