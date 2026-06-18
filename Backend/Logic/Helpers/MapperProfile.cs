@@ -27,6 +27,9 @@ namespace Logic.Helpers
             CreateMap<Entities.Models.Lecture, Entities.Dtos.LectureUpdateDto>().ReverseMap()
                 .ForMember(dest => dest.ImagePath, opt => opt.Ignore());
             CreateMap<Entities.Models.Lecture, Entities.Dtos.LectureBulkDto>().ReverseMap();
+
+            CreateMap<Entities.Models.ProgramItem, Entities.Dtos.ProgramItemCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.ProgramItem, Entities.Dtos.ProgramItemUpdateDto>().ReverseMap();
         }
     }
 }
