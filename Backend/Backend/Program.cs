@@ -29,6 +29,7 @@ namespace Backend
             builder.Services.AddScoped<AuthLogic>();
             builder.Services.AddScoped<ProfileLogic>();
             builder.Services.AddScoped<InfoBlockLogic>();
+            builder.Services.AddScoped<LectureLogic>();
             builder.Services.AddProblemDetails();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -96,6 +97,8 @@ namespace Backend
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
