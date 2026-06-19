@@ -36,13 +36,10 @@ namespace Logic.Helpers
 
             CreateMap<Entities.Models.Workshop, Entities.Dtos.WorkshopCreateDto>().ReverseMap();
             CreateMap<Entities.Models.Workshop, Entities.Dtos.WorkshopGetDto>().ReverseMap();
-
             CreateMap<Entities.Dtos.WorkshopUpdateDto, Entities.Models.Workshop>()
                 .ForMember(dest => dest.Sessions, opt => opt.Ignore());
-
             CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionCreateDto>().ReverseMap();
             CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionUpdateDto>().ReverseMap();
-
             CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionGetDto>()
                 .ForMember(dest => dest.Participants,
                            opt => opt.MapFrom(src => src.Registrations.Select(r => new Entities.Dtos.RegistrationParticipantDto
@@ -50,6 +47,13 @@ namespace Logic.Helpers
                                RegistrationId = r.Id,
                                Name = r.Profile.Name
                            }).ToList()));
+
+            CreateMap<Entities.Models.WorkshopRegistration, Entities.Dtos.WorkshopRegistrationCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.WorkshopRegistration, Entities.Dtos.WorkshopRegistrationGetDto>()
+                .ForMember(dest => dest.ProfileName, opt => opt.MapFrom(src => src.Profile.Name))
+                .ForMember(dest => dest.WorkshopTitle, opt => opt.MapFrom(src => src.WorkshopSession.Workshop.Title))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.WorkshopSession.StartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.WorkshopSession.EndTime));
         }
     }
 }
