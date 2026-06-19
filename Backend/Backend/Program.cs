@@ -34,6 +34,7 @@ namespace Backend
             builder.Services.AddScoped<SongLogic>();
             builder.Services.AddScoped<WorkshopSessionLogic>();
             builder.Services.AddScoped<WorkshopLogic>();
+            builder.Services.AddScoped<WorkshopRegistrationLogic>();
             builder.Services.AddProblemDetails();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
