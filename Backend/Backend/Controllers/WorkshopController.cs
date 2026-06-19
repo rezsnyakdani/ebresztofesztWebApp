@@ -56,5 +56,12 @@ namespace Backend.Controllers
             await _logic.DeleteAsync(id, GetUserRole());
             return NoContent();
         }
+
+        [HttpPost("bulk")]
+        public async Task<ActionResult<List<WorkshopGetDto>>> CreateMany([FromBody] List<WorkshopCreateDto> dtos)
+        {
+            var result = await _logic.CreateManyAsync(dtos, GetUserRole());
+            return Ok(result);
+        }
     }
 }

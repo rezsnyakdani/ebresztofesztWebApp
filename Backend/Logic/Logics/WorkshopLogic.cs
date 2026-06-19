@@ -131,5 +131,38 @@ namespace Logic.Logics
 
             await _workshopRepo.DeleteByIdAsync(id);
         }
+
+        public async Task<List<WorkshopGetDto>> CreateManyAsync(List<WorkshopCreateDto> dtos, string userRole)
+        {
+            CheckOrganizerRole(userRole);
+
+            var workshopsToCreate = new List<Workshop>();
+
+            foreach (var dto in dtos)
+            {
+                ValidateWorkshopData(dto.Title, dto.Lecturer, dto.Description);
+
+                foreach (var sDto in dto.Sessions)
+                {
+                    _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender);
+                }
+
+                workshopsToCreate.Add(_mapper.Map<Workshop>(dto));
+            }
+
+            var createdWorkshops = await _workshopRepo.CreateManyAsync(workshopsToCreate);
+
+            var createdIds = createdWorkshops.Select(w => w.Id).ToList();
+
+            var fullWorkshops = await _workshopRepo.GetAll()
+                .Include(w => w.Sessions)
+                    .ThenInclude(s => s.Registrations)
+                        .ThenInclude(r => r.Profile)
+                .Where(w => createdIds.Contains(w.Id))
+                .OrderBy(w => w.Title)
+                .ToListAsync();
+
+            return _mapper.Map<List<WorkshopGetDto>>(fullWorkshops);
+        }
     }
 }
