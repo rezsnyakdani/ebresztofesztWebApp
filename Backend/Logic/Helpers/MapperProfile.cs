@@ -44,8 +44,12 @@ namespace Logic.Helpers
             CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionUpdateDto>().ReverseMap();
 
             CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionGetDto>()
-                .ForMember(dest => dest.RegisteredParticipantNames,
-                           opt => opt.MapFrom(src => src.Registrations.Select(r => r.Profile.Name).ToList()));
+                .ForMember(dest => dest.Participants,
+                           opt => opt.MapFrom(src => src.Registrations.Select(r => new Entities.Dtos.RegistrationParticipantDto
+                           {
+                               RegistrationId = r.Id,
+                               Name = r.Profile.Name
+                           }).ToList()));
         }
     }
 }

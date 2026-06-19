@@ -52,7 +52,7 @@ namespace Entities.Dtos
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public string? TargetGender { get; set; }
-        public List<string> RegisteredParticipantNames { get; set; } = new();
+        public List<RegistrationParticipantDto> Participants { get; set; } = new();
     }
 
     public class WorkshopGetDto
@@ -62,5 +62,11 @@ namespace Entities.Dtos
         public string Lecturer { get; set; } = null!;
         public string Description { get; set; } = null!;
         public List<WorkshopSessionGetDto> Sessions { get; set; } = new();
+    }
+
+    public class RegistrationParticipantDto
+    {
+        public string RegistrationId { get; set; } = null!;
+        public string Name { get; set; } = null!;
     }
 }
