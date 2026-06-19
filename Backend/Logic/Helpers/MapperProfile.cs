@@ -33,6 +33,19 @@ namespace Logic.Helpers
 
             CreateMap<Entities.Models.Song, Entities.Dtos.SongCreateDto>().ReverseMap();
             CreateMap<Entities.Models.Song, Entities.Dtos.SongUpdateDto>().ReverseMap();
+
+            CreateMap<Entities.Models.Workshop, Entities.Dtos.WorkshopCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.Workshop, Entities.Dtos.WorkshopGetDto>().ReverseMap();
+
+            CreateMap<Entities.Dtos.WorkshopUpdateDto, Entities.Models.Workshop>()
+                .ForMember(dest => dest.Sessions, opt => opt.Ignore());
+
+            CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionCreateDto>().ReverseMap();
+            CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionUpdateDto>().ReverseMap();
+
+            CreateMap<Entities.Models.WorkshopSession, Entities.Dtos.WorkshopSessionGetDto>()
+                .ForMember(dest => dest.RegisteredParticipantNames,
+                           opt => opt.MapFrom(src => src.Registrations.Select(r => r.Profile.Name).ToList()));
         }
     }
 }
