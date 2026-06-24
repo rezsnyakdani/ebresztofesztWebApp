@@ -12,6 +12,13 @@ import { ProgramComponent } from './features/program/program.component';
 import { ProfilComponent } from './features/profil/profil.component';
 import { MenuComponent } from './features/menu/menu.component';
 import { LoginComponent } from './features/login/login.component';
+import { AdminDalComponent } from './features/szervezoknek/admin-dal/admin-dal.component';
+import { AdminEloadasComponent } from './features/szervezoknek/admin-eloadas/admin-eloadas.component';
+import { AdminInfoComponent } from './features/szervezoknek/admin-info/admin-info.component';
+import { AdminMuhelyComponent } from './features/szervezoknek/admin-muhely/admin-muhely.component';
+import { AdminProfilComponent } from './features/szervezoknek/admin-profil/admin-profil.component';
+import { AdminProgramComponent } from './features/szervezoknek/admin-program/admin-program.component';
+import { AdminNabarComponent } from './features/szervezoknek/admin-nabar/admin-nabar.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +31,14 @@ import { LoginComponent } from './features/login/login.component';
     ProgramComponent,
     ProfilComponent,
     MenuComponent,
-    LoginComponent
+    LoginComponent,
+    AdminDalComponent,
+    AdminEloadasComponent,
+    AdminInfoComponent,
+    AdminMuhelyComponent,
+    AdminProfilComponent,
+    AdminProgramComponent,
+    AdminNabarComponent
   ],
   imports: [
     BrowserModule,
