@@ -22,6 +22,17 @@ namespace Backend
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200") 
+                              .AllowAnyHeader()                     
+                              .AllowAnyMethod();                    
+                    });
+            });
+
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -104,6 +115,8 @@ namespace Backend
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            app.UseCors("AllowAngularFrontend");
 
             app.UseAuthentication();
             app.UseAuthorization();
