@@ -9,6 +9,7 @@ import { ProfilComponent } from './features/profil/profil.component';
 import { LoginComponent } from './features/login/login.component';
 import { EloadasComponent } from './features/eloadas/eloadas.component';
 import { InfoComponent } from './features/info/info.component';
+import { AdminProfilComponent } from './features/szervezoknek/admin-profil/admin-profil.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'eloadas', component: EloadasComponent },
   { path: 'info', component: InfoComponent },
+  { path: 'admin-profil', component: AdminProfilComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];
