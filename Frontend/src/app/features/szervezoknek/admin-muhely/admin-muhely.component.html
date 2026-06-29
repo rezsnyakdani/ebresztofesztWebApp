@@ -1,2 +1,224 @@
 <app-admin-nabar></app-admin-nabar>
-<p>admin-muhely works!</p>
+
+<div class="admin-muhely-container">
+  <h1 class="page-title">Műhelyek</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <table class="muhely-table">
+      <thead>
+        <tr>
+          <th>Cím</th>
+          <th>Előadó</th>
+          <th>Leírás</th>
+          <th>Nap</th>
+          <th>Kezdés</th>
+          <th>Befejezés</th>
+          <th>Helyszín</th>
+          <th>Kapacitás</th>
+          <th>Min. életkor</th>
+          <th>Max. életkor</th>
+          <th>Célzott nem</th>
+          <th>Résztvevők</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (workshop of workshops; track workshop.id) {
+          @if (workshop.sessions.length > 0) {
+            @for (session of workshop.sessions; track session.id; let i = $index) {
+              <tr>
+                @if (i === 0) {
+                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.title }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.lecturer }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.description }}</td>
+                }
+                <td>{{ getNapNev(session.startTime) }}</td>
+                <td>{{ session.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+                <td>{{ session.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+                <td>{{ session.place }}</td>
+                <td>{{ session.capacity }}/{{session.participants.length}}</td>
+                <td>{{ session.minAge ?? '-' }}</td>
+                <td>{{ session.maxAge ?? '-' }}</td>
+                <td>{{ session.targetGender ?? '-' }}</td>
+                <td>
+                  <button type="button" class="btn-edit" (click)="viewParticipants(workshop, session)">Résztvevők megtekintése</button>
+                </td>
+                @if (i === 0) {
+                  <td [attr.rowspan]="workshop.sessions.length">
+                    <button type="button" class="btn-edit" (click)="startEdit(workshop)">Szerkesztés</button>
+                  </td>
+                  <td [attr.rowspan]="workshop.sessions.length">
+                    <button type="button" class="btn-delete" (click)="deleteWorkshop(workshop)">Törlés</button>
+                  </td>
+                }
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td>{{ workshop.title }}</td>
+              <td>{{ workshop.lecturer }}</td>
+              <td>{{ workshop.description }}</td>
+              <td colspan="8">Nincs hozzá rendelt alkalom</td>
+              <td></td>
+              <td>
+                <button type="button" class="btn-edit" (click)="startEdit(workshop)">Szerkesztés</button>
+              </td>
+              <td>
+                <button type="button" class="btn-delete" (click)="deleteWorkshop(workshop)">Törlés</button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (selectedSessionTitle) {
+    <div class="participants-panel">
+      <h2 class="section-title">{{ selectedSessionTitle }}</h2>
+
+      @if (selectedSessionParticipants.length > 0) {
+        <ul class="participants-list">
+          @for (participant of selectedSessionParticipants; track participant.registrationId) {
+            <li>{{ participant.name }}</li>
+          }
+        </ul>
+      } @else {
+        <p>Nincs résztvevő.</p>
+      }
+
+      <button type="button" class="btn-cancel" (click)="closeParticipants()">Bezárás</button>
+    </div>
+  }
+
+  <h2 class="section-title">Műhely létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveWorkshop()">
+    <div class="input-group">
+      <label for="title">Cím</label>
+      <input type="text" id="title" name="title" [(ngModel)]="newWorkshop.title" placeholder="Pl. Hogyan legyek csónak?">
+    </div>
+
+    <div class="input-group">
+      <label for="lecturer">Előadó</label>
+      <input type="text" id="lecturer" name="lecturer" [(ngModel)]="newWorkshop.lecturer" placeholder="Pl. Kovács Anna">
+    </div>
+
+    <div class="input-group">
+      <label for="description">Leírás</label>
+      <textarea id="description" name="description" rows="4" [(ngModel)]="newWorkshop.description" placeholder="Pl. Egy izgalmas műhely..."></textarea>
+    </div>
+
+    @for (session of newWorkshop.sessions; track $index; let i = $index) {
+      <div class="session-block">
+        <h3 class="session-title">{{ i + 1 }}. műhely alkalom</h3>
+
+        <div class="input-group">
+          <label for="startTime-{{i}}">Kezdés</label>
+          <input type="datetime-local" id="startTime-{{i}}" name="startTime-{{i}}" [(ngModel)]="session.startTime">
+        </div>
+
+        <div class="input-group">
+          <label for="endTime-{{i}}">Befejezés</label>
+          <input type="datetime-local" id="endTime-{{i}}" name="endTime-{{i}}" [(ngModel)]="session.endTime">
+        </div>
+
+        <div class="input-group">
+          <label for="place-{{i}}">Helyszín</label>
+          <input type="text" id="place-{{i}}" name="place-{{i}}" [(ngModel)]="session.place" placeholder="Pl. 1-es műhelysátor">
+        </div>
+
+        <div class="input-group">
+          <label for="capacity-{{i}}">Kapacitás</label>
+          <input type="number" id="capacity-{{i}}" name="capacity-{{i}}" [(ngModel)]="session.capacity">
+        </div>
+
+        <div class="input-group">
+          <label for="minAge-{{i}}">Min. életkor</label>
+          <input type="number" id="minAge-{{i}}" name="minAge-{{i}}" [(ngModel)]="session.minAge">
+        </div>
+
+        <div class="input-group">
+          <label for="maxAge-{{i}}">Max. életkor</label>
+          <input type="number" id="maxAge-{{i}}" name="maxAge-{{i}}" [(ngModel)]="session.maxAge">
+        </div>
+
+        <div class="input-group">
+          <label for="targetGender-{{i}}">Célzott nem</label>
+          <input type="text" id="targetGender-{{i}}" name="targetGender-{{i}}" [(ngModel)]="session.targetGender" placeholder="Pl. Férfi, Nő, vagy hagyd üresen">
+        </div>
+
+        <button type="button" class="btn-remove-session" (click)="removeSession(i)">
+          Műhely alkalom elvetése
+        </button>
+      </div>
+    }
+
+    <button type="button" class="btn-add-session" (click)="addSession()">
+      Plusz műhely alkalom hozzáadása
+    </button>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingWorkshopId ? 'Szerkesztés mentése' : 'Új műhely mentése') }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelWorkshop()">
+        Mégse
+      </button>
+    </div>
+  </form>
+
+  <h2 class="section-title">Tömeges létrehozás JSON formátumban</h2>
+
+  @if (bulkErrorMessage) {
+    <div class="alert error-message">{{ bulkErrorMessage }}</div>
+  }
+
+  @if (bulkSuccessMessage) {
+    <div class="alert success-message">{{ bulkSuccessMessage }}</div>
+  }
+
+  <div class="create-form">
+    <div class="input-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+      <button type="button" class="btn-copy-sample" (click)="fillWithSample()" style="cursor: pointer; background: none; border: none; color: #007bff; text-decoration: underline;">
+        Minta JSON beillesztése
+      </button>
+    </div>
+
+    <textarea
+      id="bulkJson"
+      name="bulkJson"
+      rows="10"
+      [(ngModel)]="bulkJson"
+      placeholder="Ide illeszd be vagy gépeld be a JSON tömböt..."
+    ></textarea>
+  </div>
+
+    <div class="form-buttons">
+      <button type="button" class="btn-save" [disabled]="isBulkSaving" (click)="createManyWorkshops()">
+        {{ isBulkSaving ? 'Mentés...' : 'Tömeges létrehozás' }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelBulk()">
+        Mégse
+      </button>
+    </div>
+  </div>
+</div>
