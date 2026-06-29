@@ -21,6 +21,8 @@ export class AuthService {
 
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
   public isLoggedIn$ = this.loggedInSubject.asObservable();
+  private isAdminSubject = new BehaviorSubject<boolean>(this.checkIfAdmin());
+  public isAdmin$ = this.isAdminSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -54,5 +56,31 @@ export class AuthService {
 
   private hasToken(): boolean {
     return !!this.getToken();
+  }
+
+  private getDecodedToken(): any {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decodedPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  private checkIfAdmin(): boolean {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return false;
+
+    const roleKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+    
+    return decoded[roleKey] === 'Szervező' || decoded['Role'] === 'Szervező' || decoded['role'] === 'Szervező';
+  }
+
+  public isAdmin(): boolean {
+    return this.checkIfAdmin();
   }
 }
