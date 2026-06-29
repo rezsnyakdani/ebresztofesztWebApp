@@ -35,8 +35,8 @@ const routes: Routes = [
   { path: 'admin-info', component: AdminInfoComponent, canActivate: [adminGuard] },
   { path: 'admin-muhely', component: AdminMuhelyComponent, canActivate: [adminGuard] },
   { path: 'admin-program', component: AdminProgramComponent, canActivate: [adminGuard] },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' }
+  { path: '', redirectTo: '/info', pathMatch: 'full' },
+  { path: '**', redirectTo: '/info' }
 ];
 
 @NgModule({

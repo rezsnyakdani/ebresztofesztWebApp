@@ -12,7 +12,7 @@ export class MenuComponent {
   logoutMessage = '';
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
   ) {}
 

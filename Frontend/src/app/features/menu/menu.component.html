@@ -7,7 +7,26 @@
     </div>
   }
 
+  
+
   <div class="menu-list">
+
+    @if (authService.isLoggedIn$ | async) {
+      <div class="menu-list">
+        <a (click)="onLogout($event)" class="menu-item logout-item" style="cursor: pointer;">
+          <span class="material-icons menu-icon">logout</span>
+          <span class="menu-text" style="font-weight: bold;">Kijelentkezés</span>
+          <span class="material-icons chevron">chevron_right</span>
+        </a>
+      </div>
+    } @else {
+      <a routerLink="/login" class="menu-item">
+        <span class="material-icons menu-icon">login</span>
+        <span class="menu-text" style="font-weight: bold;">Bejelentkezés</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    }
+
     <a routerLink="/info" fragment="koszonto" class="menu-item">
       <span class="menu-text">Köszöntő</span>
       <span class="material-icons chevron">chevron_right</span>
@@ -48,17 +67,13 @@
       <span class="material-icons chevron">chevron_right</span>
     </a>
 
-    <a routerLink="/admin-profil" class="menu-item">
-      <span class="menu-text szervezoknek">Szerkesztő felület szervezőknek</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
-
-    <div class="menu-list">
-      <a (click)="onLogout($event)" class="menu-item logout-item" style="cursor: pointer;">
-        <span class="material-icons menu-icon">logout</span>
-        <span class="menu-text">Kijelentkezés</span>
+    @if (authService.isAdmin()) {
+      <a routerLink="/admin-profil" class="menu-item">
+        <span class="menu-text szervezoknek">Szerkesztő felület szervezőknek</span>
         <span class="material-icons chevron">chevron_right</span>
       </a>
-    </div>
+    }
+
+    
   </div>
 </div>
