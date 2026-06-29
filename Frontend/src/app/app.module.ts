@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+//import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,6 +23,9 @@ import { AdminMuhelyComponent } from './features/szervezoknek/admin-muhely/admin
 import { AdminProfilComponent } from './features/szervezoknek/admin-profil/admin-profil.component';
 import { AdminProgramComponent } from './features/szervezoknek/admin-program/admin-program.component';
 import { AdminNabarComponent } from './features/szervezoknek/admin-nabar/admin-nabar.component';
+import { jwtInterceptor } from './helpers/jwt.interceptor';
+import { errorInterceptor } from './helpers/error.interceptor';
+
 
 @NgModule({
   declarations: [
@@ -48,7 +53,7 @@ import { AdminNabarComponent } from './features/szervezoknek/admin-nabar/admin-n
     FormsModule
   ],
   providers: [
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptors([jwtInterceptor, errorInterceptor]))
   ],
   bootstrap: [AppComponent]
 })
