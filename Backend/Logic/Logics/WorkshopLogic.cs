@@ -4,6 +4,7 @@ using Entities.Dtos;
 using Entities.Models;
 using Logic.Helpers;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -107,6 +108,7 @@ namespace Logic.Logics
                 if (string.IsNullOrEmpty(sDto.Id))
                 {
                     var newSession = _mapper.Map<WorkshopSession>(sDto);
+                    newSession.Id = Guid.NewGuid().ToString();
                     workshop.Sessions.Add(newSession);
                 }
                 else
