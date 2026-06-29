@@ -1,2 +1,129 @@
 <app-admin-nabar></app-admin-nabar>
-<p>admin-profil works!</p>
+
+<div class="admin-profil-container">
+  <h1 class="page-title">Résztvevők</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <table class="profil-table">
+      <thead>
+        <tr>
+          <th>Név</th>
+          <th>Email</th>
+          <th>Szerepkör</th>
+          <th>Születési dátum</th>
+          <th>Nem</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (profile of profiles; track profile.id) {
+          <tr>
+            <td>{{ profile.name }}</td>
+            <td>{{ profile.email }}</td>
+            <td>{{ profile.role }}</td>
+            <td>{{ profile.birthDate | date:'yyyy.MM.dd' }}</td>
+            <td>{{ profile.gender }}</td>
+            <td>
+              <button type="button" class="btn-edit" (click)="startEdit(profile)">Szerkesztés</button>
+            </td>
+            <td>
+              <button type="button" class="btn-delete" (click)="deleteProfile(profile)">Törlés</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <h2 class="section-title">Résztvevő létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveProfile()">
+    <div class="input-group">
+      <label for="name">Név</label>
+      <input type="text" id="name" name="name" [(ngModel)]="newProfile.name" placeholder="Pl. Minta János">
+    </div>
+
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" [(ngModel)]="newProfile.email" placeholder="Pl. minta.janos@email.com">
+    </div>
+
+    <div class="input-group">
+      <label for="role">Szerepkör</label>
+      <input type="text" id="role" name="role" [(ngModel)]="newProfile.role" placeholder="Pl. Résztvevő">
+    </div>
+
+    <div class="input-group">
+      <label for="birthDate">Születési dátum</label>
+      <input type="date" id="birthDate" name="birthDate" [(ngModel)]="newProfile.birthDate">
+    </div>
+
+    <div class="input-group">
+      <label for="gender">Nem</label>
+      <input type="text" id="gender" name="gender" [(ngModel)]="newProfile.gender" placeholder="Pl. Férfi">
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingProfileId ? 'Szerkesztés mentése' : 'Új résztvevő mentése') }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelProfile()">
+        Mégse
+      </button>
+    </div>
+  </form>
+
+  <h2 class="section-title">Tömeges létrehozás JSON formátumban</h2>
+
+  @if (bulkErrorMessage) {
+    <div class="alert error-message">{{ bulkErrorMessage }}</div>
+  }
+
+  @if (bulkSuccessMessage) {
+    <div class="alert success-message">{{ bulkSuccessMessage }}</div>
+  }
+
+  <div class="create-form">
+    <div class="input-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+      <button type="button" class="btn-copy-sample" (click)="fillWithSample()" style="cursor: pointer; background: none; border: none; color: #007bff; text-decoration: underline;">
+        Minta JSON beillesztése
+      </button>
+    </div>
+    
+    <textarea
+      id="bulkJson"
+      name="bulkJson"
+      rows="10"
+      [(ngModel)]="bulkJson"
+      placeholder="Ide illeszd be vagy gépeld be a JSON tömböt..."
+    ></textarea>
+  </div>
+
+    <div class="form-buttons">
+      <button type="button" class="btn-save" [disabled]="isBulkSaving" (click)="createManyProfiles()">
+        {{ isBulkSaving ? 'Mentés...' : 'Tömeges létrehozás' }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelBulk()">
+        Mégse
+      </button>
+    </div>
+  </div>
+</div>
