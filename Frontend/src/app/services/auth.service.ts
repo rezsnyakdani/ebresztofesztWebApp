@@ -90,4 +90,22 @@ export class AuthService {
   public isAdmin(): boolean {
     return this.checkIfAdmin();
   }
+
+  public getUserId(): string | null {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return null;
+
+    const idKey = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
+
+    return decoded[idKey] || decoded['nameid'] || decoded['sub'] || decoded['Id'] || decoded['id'] || null;
+  }
+
+  public getUserRole(): string | null {
+    const decoded = this.getDecodedToken();
+    if (!decoded) return null;
+
+    const roleKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+
+    return decoded[roleKey] || decoded['Role'] || decoded['role'] || null;
+  }
 }

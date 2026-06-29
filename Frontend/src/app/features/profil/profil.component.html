@@ -7,49 +7,89 @@
     </div>
   }
 
-  <section class="profile-card">
-    <div class="avatar-container">
-      <span class="material-icons avatar-icon">account_circle</span>
+  @if (errorMessage) {
+    <div class="alert error-message" style="margin-bottom: 20px;">
+      <span class="material-icons">error_outline</span>
+      {{ errorMessage }}
     </div>
+  }
 
-    <div class="profile-details">
-      <div class="detail-item">
-        <span class="detail-label">Teljes név</span>
-        <span class="detail-value">Szabó Márton</span>
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else if (profile) {
+    <section class="profile-card">
+
+      <div class="profile-details">
+        <div class="detail-item">
+          <span class="detail-label">Teljes név</span>
+          <span class="detail-value">{{ profile.name }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Születési dátum</span>
+          <span class="detail-value">{{ profile.birthDate | date:'yyyy. MM. dd.' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Neme</span>
+          <span class="detail-value">{{ profile.gender }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Email</span>
+          <span class="detail-value">{{ profile.email }}</span>
+        </div>
       </div>
 
-      <div class="detail-item">
-        <span class="detail-label">Születési dátum</span>
-        <span class="detail-value">2005. 08. 15.</span>
+      <div class="action-buttons">
+        <button class="btn-outline" type="button" [class.btn-hidden]="isChangingPassword" (click)="openPasswordForm()">
+          Jelszó megváltoztatása
+        </button>
+
+        <div class="password-form" [class.password-form-open]="isChangingPassword">
+          <div class="password-form-inner">
+            <div class="input-group">
+              <label for="oldPassword">Jelenlegi jelszó</label>
+              <input type="password" id="oldPassword" name="oldPassword" [(ngModel)]="passwordForm.oldPassword">
+            </div>
+
+            <div class="input-group">
+              <label for="newPassword">Új jelszó</label>
+              <input type="password" id="newPassword" name="newPassword" [(ngModel)]="passwordForm.newPassword">
+            </div>
+
+            <div class="input-group">
+              <label for="newPasswordConfirm">Új jelszó megerősítése</label>
+              <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" [(ngModel)]="passwordForm.newPasswordConfirm">
+            </div>
+
+            <div class="password-form-buttons">
+              <button class="btn-outline" type="button" [disabled]="isSavingPassword" (click)="savePassword()">
+                {{ isSavingPassword ? 'Mentés...' : 'Új jelszó mentése' }}
+              </button>
+
+              <button class="btn-back" type="button" (click)="cancelPasswordForm()">
+                Vissza
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @if (passwordErrorMessage) {
+          <div class="alert error-message">{{ passwordErrorMessage }}</div>
+        }
+
+        @if (passwordSuccessMessage) {
+          <div class="alert success-message">{{ passwordSuccessMessage }}</div>
+        }
+
+        <button class="btn-logout" (click)="onLogout()">
+          <span class="material-icons">logout</span>
+          Kijelentkezés
+        </button>
       </div>
-
-      <div class="detail-item">
-        <span class="detail-label">Neme</span>
-        <span class="detail-value">Férfi</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="detail-label">Email</span>
-        <span class="detail-value">csoki&#64;gmail.com</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="detail-label">Pozíció</span>
-        <span class="detail-value">Résztvevő</span>
-      </div>
-    </div>
-
-    <div class="action-buttons">
-      <button class="btn-outline" type="button">
-        Jelszó megváltoztatása
-      </button>
-
-      <button class="btn-logout" (click)="onLogout()">
-        <span class="material-icons">logout</span>
-        Kijelentkezés
-      </button>
-    </div>
-  </section>
+    </section>
+  }
 
   <div class="my-workshops">
       <h2 class="section-title">Jelentkezéseim</h2>

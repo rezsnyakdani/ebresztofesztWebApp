@@ -109,8 +109,8 @@ export class ProfilService {
     );
   }
 
-  public changePassword(id: string, dto: ChangePasswordDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/change-password`, dto).pipe(
+  public changePassword(id: string, dto: ChangePasswordDto): Observable<string> {
+    return this.http.post(`${this.apiUrl}/${id}/change-password`, dto, { responseType: 'text' }).pipe(
       tap(() => this.kezelSiker('A jelszó sikeresen megváltoztatva!')),
       catchError(error => this.kezelHiba(error))
     );
