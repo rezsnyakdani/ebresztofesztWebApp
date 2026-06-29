@@ -2,8 +2,7 @@
   <div class="login-content">
     
     <div class="header-section">
-      <h1 class="app-title">Ébresztő Fesztivál</h1>
-      <p class="subtitle">Jelentkezz be a folytatáshoz!</p>
+      <h1 class="app-title">Jelentkezz be a folytatáshoz!</h1>
     </div>
 
     <form class="form-section" (ngSubmit)="login()">
@@ -26,7 +25,7 @@
         <label for="fullname">Teljes név</label>
         <div class="input-wrapper">
           <span class="material-icons">person</span>
-          <input type="text" id="fullname" name="fullname" [(ngModel)]="name" placeholder="Pl. Minta János">
+          <input type="text" id="fullname" name="fullname" [(ngModel)]="name" placeholder="Pl. Szabó Márton">
         </div>
       </div>
 
@@ -36,6 +35,7 @@
           <span class="material-icons">lock</span>
           <input type="password" id="password" name="password" [(ngModel)]="password" placeholder="••••••••">
         </div>
+        <label>Alapértelmezett jelszavad a születési éved pontok nélkül! Pl. ha 2008.03.14-én születtél, akkor 20080314 a jelszavad. Ezt bejelentkezés után bármikor módosíthatod.</label>
       </div>
 
       <button type="submit" class="btn-login" [disabled]="isLoading">
