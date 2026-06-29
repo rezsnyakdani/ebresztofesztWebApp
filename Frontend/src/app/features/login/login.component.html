@@ -6,13 +6,27 @@
       <p class="subtitle">Jelentkezz be a folytatáshoz!</p>
     </div>
 
-    <div class="form-section">
+    <form class="form-section" (ngSubmit)="login()">
       
+      @if (errorMessage) {
+        <div class="alert error-message">
+          <span class="material-icons">error_outline</span>
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="alert success-message">
+          <span class="material-icons">check_circle_outline</span>
+          {{ successMessage }}
+        </div>
+      }
+
       <div class="input-group">
         <label for="fullname">Teljes név</label>
         <div class="input-wrapper">
           <span class="material-icons">person</span>
-          <input type="text" id="fullname" placeholder="Pl. Minta János">
+          <input type="text" id="fullname" name="fullname" [(ngModel)]="name" placeholder="Pl. Minta János">
         </div>
       </div>
 
@@ -20,14 +34,14 @@
         <label for="password">Jelszó</label>
         <div class="input-wrapper">
           <span class="material-icons">lock</span>
-          <input type="password" id="password" placeholder="••••••••">
+          <input type="password" id="password" name="password" [(ngModel)]="password" placeholder="••••••••">
         </div>
       </div>
 
-      <button class="btn-login" routerLink="/info">
-        Bejelentkezés
+      <button type="submit" class="btn-login" [disabled]="isLoading">
+        {{ isLoading ? 'Kérlek várj...' : 'Bejelentkezés' }}
       </button>
       
-    </div>
+    </form>
   </div>
 </div>
