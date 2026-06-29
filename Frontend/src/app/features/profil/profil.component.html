@@ -1,4 +1,12 @@
 <div class="profile-container">
+
+  @if (logoutMessage) {
+    <div class="alert success-message" style="margin-bottom: 20px;">
+      <span class="material-icons">check_circle_outline</span>
+      {{ logoutMessage }}
+    </div>
+  }
+
   <section class="profile-card">
     <div class="avatar-container">
       <span class="material-icons avatar-icon">account_circle</span>
@@ -36,7 +44,7 @@
         Jelszó megváltoztatása
       </button>
 
-      <button class="btn-logout" routerLink="/login">
+      <button class="btn-logout" (click)="onLogout()">
         <span class="material-icons">logout</span>
         Kijelentkezés
       </button>

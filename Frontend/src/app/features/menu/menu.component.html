@@ -1,5 +1,12 @@
 <div class="menu-container">
   
+  @if (logoutMessage) {
+    <div class="alert success-message">
+      <span class="material-icons">check_circle_outline</span>
+      {{ logoutMessage }}
+    </div>
+  }
+
   <div class="menu-list">
     <a routerLink="/info" fragment="koszonto" class="menu-item">
       <span class="menu-text">Köszöntő</span>
@@ -46,10 +53,12 @@
       <span class="material-icons chevron">chevron_right</span>
     </a>
 
-    <a routerLink="/login" class="menu-item logout-item">
-      <span class="material-icons menu-icon">logout</span>
-      <span class="menu-text">Kijelentkezés</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
+    <div class="menu-list">
+      <a (click)="onLogout($event)" class="menu-item logout-item" style="cursor: pointer;">
+        <span class="material-icons menu-icon">logout</span>
+        <span class="menu-text">Kijelentkezés</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    </div>
   </div>
 </div>
