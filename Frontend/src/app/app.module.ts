@@ -24,6 +24,7 @@ import { AdminMuhelyComponent } from './features/szervezoknek/admin-muhely/admin
 import { AdminProfilComponent } from './features/szervezoknek/admin-profil/admin-profil.component';
 import { AdminProgramComponent } from './features/szervezoknek/admin-program/admin-program.component';
 import { AdminNabarComponent } from './features/szervezoknek/admin-nabar/admin-nabar.component';
+import { HeaderComponent } from './features/header/header.component';
 import { jwtInterceptor } from './helpers/jwt.interceptor';
 import { errorInterceptor } from './helpers/error.interceptor';
 
@@ -46,7 +47,8 @@ import { errorInterceptor } from './helpers/error.interceptor';
     AdminMuhelyComponent,
     AdminProfilComponent,
     AdminProgramComponent,
-    AdminNabarComponent
+    AdminNabarComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
