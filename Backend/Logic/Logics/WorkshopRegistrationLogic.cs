@@ -3,6 +3,7 @@ using Data.Repositories;
 using Entities.Dtos;
 using Entities.Models;
 using Logic.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,17 +18,20 @@ namespace Logic.Logics
         private readonly IRepository<WorkshopSession> _sessionRepo;
         private readonly IRepository<Entities.Models.Profile> _profileRepo;
         private readonly IMapper _mapper;
+        private readonly IHubContext<AppHub> _hubContext;
 
         public WorkshopRegistrationLogic(
             IRepository<WorkshopRegistration> regRepo,
             IRepository<WorkshopSession> sessionRepo,
             IRepository<Entities.Models.Profile> profileRepo,
-            IMapper mapper)
+            IMapper mapper,
+            IHubContext<AppHub> hubContext)
         {
             _regRepo = regRepo;
             _sessionRepo = sessionRepo;
             _profileRepo = profileRepo;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         private void CheckAuthorization(string targetProfileId, string currentUserId, string userRole)
@@ -126,7 +130,9 @@ namespace Logic.Logics
                     .ThenInclude(s => s.Workshop)
                 .FirstOrDefaultAsync(r => r.Id == registration.Id);
 
-            return _mapper.Map<WorkshopRegistrationGetDto>(createdFull);
+            var result = _mapper.Map<WorkshopRegistrationGetDto>(createdFull);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+            return result;
         }
 
         public async Task DeleteAsync(string id, string currentUserId, string userRole)
@@ -137,6 +143,7 @@ namespace Logic.Logics
             CheckAuthorization(registration.ProfileId, currentUserId, userRole);
 
             await _regRepo.DeleteByIdAsync(id);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
         }
     }
 }

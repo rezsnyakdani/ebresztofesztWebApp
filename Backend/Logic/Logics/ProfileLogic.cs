@@ -8,6 +8,7 @@ using AutoMapper;
 using Data.Repositories;
 using Entities.Dtos;
 using Logic.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 
@@ -17,11 +18,13 @@ namespace Logic.Logics
     {
         private readonly IRepository<Entities.Models.Profile> _repository;
         private readonly IMapper _mapper;
+        private readonly IHubContext<AppHub> _hubContext;
 
-        public ProfileLogic(IRepository<Entities.Models.Profile> repository, IMapper mapper)
+        public ProfileLogic(IRepository<Entities.Models.Profile> repository, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _repository = repository;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         private void CheckOrganizerRole(string userRole)
@@ -94,7 +97,9 @@ namespace Logic.Logics
             profile.PasswordHash = PasswordHasher.HashPassword(defaultPassword);
 
             var created = await _repository.CreateAsync(profile);
-            return _mapper.Map<ProfileGetByIdDto>(created);
+            var result = _mapper.Map<ProfileGetByIdDto>(created);
+            await _hubContext.Clients.All.SendAsync("ProfilesChanged");
+            return result;
         }
 
         public async Task<ProfileGetByIdDto> UpdateAsync(string targetId, ProfileUpdateDto dto, string userRole)
@@ -108,7 +113,9 @@ namespace Logic.Logics
             _mapper.Map(dto, profile);
             await _repository.UpdateAsync(profile);
 
-            return _mapper.Map<ProfileGetByIdDto>(profile);
+            var result = _mapper.Map<ProfileGetByIdDto>(profile);
+            await _hubContext.Clients.All.SendAsync("ProfilesChanged");
+            return result;
         }
 
         public async Task DeleteAsync(string targetId, string userRole)
@@ -118,6 +125,7 @@ namespace Logic.Logics
             if (profile == null) throw new NotFoundException("A felhasználó nem található.");
 
             await _repository.DeleteByIdAsync(targetId);
+            await _hubContext.Clients.All.SendAsync("ProfilesChanged");
         }
 
         public async Task ChangePasswordAsync(string targetId, string currentUserId, ChangePasswordDto dto)
@@ -168,7 +176,9 @@ namespace Logic.Logics
 
             await _repository.CreateManyAsync(profilesToCreate);
 
-            return _mapper.Map<List<ProfileGetByIdDto>>(profilesToCreate);
+            var result = _mapper.Map<List<ProfileGetByIdDto>>(profilesToCreate);
+            await _hubContext.Clients.All.SendAsync("ProfilesChanged");
+            return result;
         }
     }
 }

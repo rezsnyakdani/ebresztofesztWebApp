@@ -3,6 +3,7 @@ using Data.Repositories;
 using Entities.Dtos;
 using Entities.Models;
 using Logic.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,15 @@ namespace Logic.Logics
         private readonly IRepository<WorkshopSession> _sessionRepo;
         private readonly WorkshopSessionLogic _sessionLogic;
         private readonly IMapper _mapper;
+        private readonly IHubContext<AppHub> _hubContext;
 
-        public WorkshopLogic(IRepository<Workshop> workshopRepo, IRepository<WorkshopSession> sessionRepo, WorkshopSessionLogic sessionLogic, IMapper mapper)
+        public WorkshopLogic(IRepository<Workshop> workshopRepo, IRepository<WorkshopSession> sessionRepo, WorkshopSessionLogic sessionLogic, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _workshopRepo = workshopRepo;
             _sessionRepo = sessionRepo;
             _sessionLogic = sessionLogic;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         private void CheckOrganizerRole(string userRole)
@@ -76,7 +79,9 @@ namespace Logic.Logics
             var workshop = _mapper.Map<Workshop>(dto);
             var created = await _workshopRepo.CreateAsync(workshop);
 
-            return await GetByIdAsync(created.Id);
+            var result = await GetByIdAsync(created.Id);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+            return result;
         }
 
         public async Task<WorkshopGetDto> UpdateAsync(string id, WorkshopUpdateDto dto, string userRole)
@@ -122,7 +127,9 @@ namespace Logic.Logics
             }
 
             await _workshopRepo.UpdateAsync(workshop);
-            return await GetByIdAsync(id);
+            var result = await GetByIdAsync(id);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+            return result;
         }
 
         public async Task DeleteAsync(string id, string userRole)
@@ -132,6 +139,7 @@ namespace Logic.Logics
             if (workshop == null) throw new NotFoundException("A műhely nem található.");
 
             await _workshopRepo.DeleteByIdAsync(id);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
         }
 
         public async Task<List<WorkshopGetDto>> CreateManyAsync(List<WorkshopCreateDto> dtos, string userRole)
@@ -164,7 +172,9 @@ namespace Logic.Logics
                 .OrderBy(w => w.Title)
                 .ToListAsync();
 
-            return _mapper.Map<List<WorkshopGetDto>>(fullWorkshops);
+            var result = _mapper.Map<List<WorkshopGetDto>>(fullWorkshops);
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+            return result;
         }
     }
 }
