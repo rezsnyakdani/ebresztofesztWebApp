@@ -16,14 +16,16 @@ namespace Logic.Logics
     {
         private readonly IRepository<Workshop> _workshopRepo;
         private readonly IRepository<WorkshopSession> _sessionRepo;
+        private readonly IRepository<WorkshopRegistration> _regRepo;
         private readonly WorkshopSessionLogic _sessionLogic;
         private readonly IMapper _mapper;
         private readonly IHubContext<AppHub> _hubContext;
 
-        public WorkshopLogic(IRepository<Workshop> workshopRepo, IRepository<WorkshopSession> sessionRepo, WorkshopSessionLogic sessionLogic, IMapper mapper, IHubContext<AppHub> hubContext)
+        public WorkshopLogic(IRepository<Workshop> workshopRepo, IRepository<WorkshopSession> sessionRepo, IRepository<WorkshopRegistration> regRepo, WorkshopSessionLogic sessionLogic, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _workshopRepo = workshopRepo;
             _sessionRepo = sessionRepo;
+            _regRepo = regRepo;
             _sessionLogic = sessionLogic;
             _mapper = mapper;
             _hubContext = hubContext;
@@ -94,6 +96,8 @@ namespace Logic.Logics
                 .FirstOrDefaultAsync(w => w.Id == id);
 
             if (workshop == null) throw new NotFoundException("A műhely nem található.");
+
+            await ValidateSessionUpdatesAsync(dto.Title, dto.Sessions);
 
             _mapper.Map(dto, workshop);
 
@@ -175,6 +179,82 @@ namespace Logic.Logics
             var result = _mapper.Map<List<WorkshopGetDto>>(fullWorkshops);
             await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
             return result;
+        }
+
+        private async Task ValidateSessionUpdatesAsync(string workshopTitle, List<WorkshopSessionUpdateDto> updatedSessions)
+        {
+            var existingSessionIds = updatedSessions
+                .Where(s => !string.IsNullOrEmpty(s.Id))
+                .Select(s => s.Id!)
+                .ToList();
+
+            if (!existingSessionIds.Any()) return;
+
+            var sessionsWithRegistrations = await _sessionRepo.GetAll()
+                .Include(s => s.Registrations)
+                    .ThenInclude(r => r.Profile)
+                .Where(s => existingSessionIds.Contains(s.Id))
+                .ToListAsync();
+
+            var errors = new List<string>();
+
+            foreach (var sDto in updatedSessions.Where(s => !string.IsNullOrEmpty(s.Id)))
+            {
+                var currentSession = sessionsWithRegistrations.FirstOrDefault(s => s.Id == sDto.Id);
+                if (currentSession == null || !currentSession.Registrations.Any()) continue;
+
+                bool timeChanging = currentSession.StartTime != sDto.StartTime || currentSession.EndTime != sDto.EndTime;
+
+                foreach (var reg in currentSession.Registrations)
+                {
+                    var profile = reg.Profile;
+                    int age = CalculateAge(profile.BirthDate);
+
+                    if (!string.IsNullOrEmpty(sDto.TargetGender) && profile.Gender != sDto.TargetGender)
+                    {
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely célzott nemét {sDto.TargetGender}-re, mert {profile.Name} résztvevő neme {profile.Gender}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+
+                    if (sDto.MinAge.HasValue && age < sDto.MinAge.Value)
+                    {
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely minimum életkorát {sDto.MinAge}-re, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+
+                    if (sDto.MaxAge.HasValue && age > sDto.MaxAge.Value)
+                    {
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely maximum életkorát {sDto.MaxAge}-re, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+
+                    if (timeChanging)
+                    {
+                        var otherRegistrations = await _regRepo.GetAll()
+                            .Include(r => r.WorkshopSession)
+                                .ThenInclude(s => s.Workshop)
+                            .Where(r => r.ProfileId == profile.Id && r.WorkshopSessionId != sDto.Id)
+                            .ToListAsync();
+
+                        foreach (var otherReg in otherRegistrations)
+                        {
+                            var other = otherReg.WorkshopSession;
+                            if (sDto.StartTime < other.EndTime && sDto.EndTime > other.StartTime)
+                            {
+                                errors.Add($"Nem módosíthatod a {workshopTitle} műhely kezdés/befejezés időpontját {sDto.StartTime:yyyy.MM.dd HH:mm}-ra, mert {profile.Name} résztvevőnek jelentkezése van ugyanebben az időpontban egy másik műhely alkalomra. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (errors.Count > 0)
+                throw new BadRequestException(string.Join("\n", errors));
+        }
+
+        private static int CalculateAge(DateTime birthDate)
+        {
+            int age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate.Date > DateTime.Today.AddYears(-age)) age--;
+            return age;
         }
     }
 }

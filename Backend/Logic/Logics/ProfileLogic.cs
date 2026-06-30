@@ -17,12 +17,14 @@ namespace Logic.Logics
     public class ProfileLogic
     {
         private readonly IRepository<Entities.Models.Profile> _repository;
+        private readonly IRepository<WorkshopRegistration> _regRepo;
         private readonly IMapper _mapper;
         private readonly IHubContext<AppHub> _hubContext;
 
-        public ProfileLogic(IRepository<Entities.Models.Profile> repository, IMapper mapper, IHubContext<AppHub> hubContext)
+        public ProfileLogic(IRepository<Entities.Models.Profile> repository, IRepository<WorkshopRegistration> regRepo, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _repository = repository;
+            _regRepo = regRepo;
             _mapper = mapper;
             _hubContext = hubContext;
         }
@@ -110,12 +112,56 @@ namespace Logic.Logics
             var profile = await _repository.GetOneAsync(targetId);
             if (profile == null) throw new NotFoundException("A felhasználó nem található.");
 
+            // Check if new gender or birthDate would violate existing workshop registration constraints
+            var registrations = await _regRepo.GetAll()
+                .Include(r => r.WorkshopSession)
+                    .ThenInclude(s => s.Workshop)
+                .Where(r => r.ProfileId == targetId)
+                .ToListAsync();
+
+            if (registrations.Any())
+            {
+                var errors = new List<string>();
+                int newAge = CalculateAge(dto.BirthDate);
+
+                foreach (var reg in registrations)
+                {
+                    var session = reg.WorkshopSession;
+                    string workshopTitle = session.Workshop.Title;
+
+                    if (!string.IsNullOrEmpty(session.TargetGender) && session.TargetGender != dto.Gender)
+                    {
+                        errors.Add($"Nem módosíthatod {profile.Name} nemét {dto.Gender} nemre, mert résztvevő a {workshopTitle} műhelyen, ahol a célzott nem a {session.TargetGender}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+
+                    if (session.MinAge.HasValue && newAge < session.MinAge.Value)
+                    {
+                        errors.Add($"Nem módosíthatod {profile.Name} születési idejét {dto.BirthDate:yyyy.MM.dd} dátumra, mert résztvevő a {workshopTitle} műhelyen, ahol a minimum életkor {session.MinAge}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+
+                    if (session.MaxAge.HasValue && newAge > session.MaxAge.Value)
+                    {
+                        errors.Add($"Nem módosíthatod {profile.Name} születési idejét {dto.BirthDate:yyyy.MM.dd} dátumra, mert résztvevő a {workshopTitle} műhelyen, ahol a maximum életkor {session.MaxAge}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                    }
+                }
+
+                if (errors.Count > 0)
+                    throw new BadRequestException(string.Join("\n", errors));
+            }
+
             _mapper.Map(dto, profile);
             await _repository.UpdateAsync(profile);
 
             var result = _mapper.Map<ProfileGetByIdDto>(profile);
             await _hubContext.Clients.All.SendAsync("ProfilesChanged");
             return result;
+        }
+
+        private static int CalculateAge(DateTime birthDate)
+        {
+            int age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate.Date > DateTime.Today.AddYears(-age)) age--;
+            return age;
         }
 
         public async Task DeleteAsync(string targetId, string userRole)
@@ -126,6 +172,7 @@ namespace Logic.Logics
 
             await _repository.DeleteByIdAsync(targetId);
             await _hubContext.Clients.All.SendAsync("ProfilesChanged");
+            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
         }
 
         public async Task ChangePasswordAsync(string targetId, string currentUserId, ChangePasswordDto dto)
