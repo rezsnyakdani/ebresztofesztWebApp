@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MuhelyService, WorkshopGetDto, WorkshopUpdateDto, WorkshopSessionUpdateDto, WorkshopCreateDto, WorkshopSessionGetDto, RegistrationParticipantDto } from '../../../services/muhely.service';
 import { ProfilService, ProfileGetAllDto } from '../../../services/profil.service';
+import { SignalrService } from '../../../services/signalr.service';
 
 @Component({
   selector: 'app-admin-muhely',
@@ -8,7 +10,8 @@ import { ProfilService, ProfileGetAllDto } from '../../../services/profil.servic
   templateUrl: './admin-muhely.component.html',
   styleUrl: './admin-muhely.component.sass'
 })
-export class AdminMuhelyComponent implements OnInit {
+export class AdminMuhelyComponent implements OnInit, OnDestroy {
+  private signalrSub = new Subscription();
   workshops: WorkshopGetDto[] = [];
   isLoading = false;
   errorMessage = '';
@@ -37,12 +40,22 @@ export class AdminMuhelyComponent implements OnInit {
 
   constructor(
     private muhelyService: MuhelyService,
-    private profilService: ProfilService
+    private profilService: ProfilService,
+    private signalrService: SignalrService
   ) {}
 
   ngOnInit(): void {
     this.loadWorkshops();
     this.loadProfiles();
+    this.signalrSub.add(this.signalrService.workshopsChanged$.subscribe(() => this.loadWorkshops()));
+    this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => {
+      this.loadWorkshops();
+      this.loadProfiles();
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.signalrSub.unsubscribe();
   }
 
   loadProfiles(): void {
@@ -62,12 +75,28 @@ export class AdminMuhelyComponent implements OnInit {
       next: (data) => {
         this.workshops = data;
         this.isLoading = false;
+        this.syncParticipantsPanel();
       },
       error: (err) => {
         this.errorMessage = err.message;
         this.isLoading = false;
       }
     });
+  }
+
+  private syncParticipantsPanel(): void {
+    if (!this.selectedSession || !this.selectedWorkshop) return;
+
+    const updatedWorkshop = this.workshops.find(w => w.id === this.selectedWorkshop!.id);
+    if (!updatedWorkshop) { this.closeParticipants(); return; }
+
+    const updatedSession = updatedWorkshop.sessions.find(s => s.id === this.selectedSession!.id);
+    if (!updatedSession) { this.closeParticipants(); return; }
+
+    this.selectedWorkshop = updatedWorkshop;
+    this.selectedSession = updatedSession;
+    this.selectedSessionParticipants = [...updatedSession.participants];
+    this.selectedSessionTitle = this.buildSessionTitle(updatedWorkshop, updatedSession, this.selectedSessionParticipants.length);
   }
 
   getNapNev(dateStr: string): string {

@@ -212,17 +212,17 @@ namespace Logic.Logics
 
                     if (!string.IsNullOrEmpty(sDto.TargetGender) && profile.Gender != sDto.TargetGender)
                     {
-                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely célzott nemét {sDto.TargetGender}-re, mert {profile.Name} résztvevő neme {profile.Gender}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely célzott nemét {sDto.TargetGender} nemre, mert {profile.Name} résztvevő neme {profile.Gender}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
                     }
 
                     if (sDto.MinAge.HasValue && age < sDto.MinAge.Value)
                     {
-                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely minimum életkorát {sDto.MinAge}-re, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely minimum életkorát {sDto.MinAge} évre, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
                     }
 
                     if (sDto.MaxAge.HasValue && age > sDto.MaxAge.Value)
                     {
-                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely maximum életkorát {sDto.MaxAge}-re, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                        errors.Add($"Nem módosíthatod a {workshopTitle} műhely maximum életkorát {sDto.MaxAge} évre, mert {profile.Name} résztvevő születési dátuma {profile.BirthDate:yyyy.MM.dd}. Előbb töröld a jelentkezését, utána már tudod módosítani.");
                     }
 
                     if (timeChanging)
@@ -238,7 +238,7 @@ namespace Logic.Logics
                             var other = otherReg.WorkshopSession;
                             if (sDto.StartTime < other.EndTime && sDto.EndTime > other.StartTime)
                             {
-                                errors.Add($"Nem módosíthatod a {workshopTitle} műhely kezdés/befejezés időpontját {sDto.StartTime:yyyy.MM.dd HH:mm}-ra, mert {profile.Name} résztvevőnek jelentkezése van ugyanebben az időpontban egy másik műhely alkalomra. Előbb töröld a jelentkezését, utána már tudod módosítani.");
+                                errors.Add($"Nem módosíthatod a {workshopTitle} műhely kezdését {sDto.StartTime:yyyy.MM.dd HH:mm} időpontra, mert {profile.Name} résztvevőnek jelentkezése van ugyanebben az időpontban egy másik műhely alkalomra. Előbb töröld a jelentkezését, utána már tudod módosítani.");
                                 break;
                             }
                         }

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ProfilService, ProfileGetAllDto, ProfileCreateDto } from '../../../services/profil.service';
+import { SignalrService } from '../../../services/signalr.service';
 
 @Component({
   selector: 'app-admin-profil',
@@ -7,7 +9,8 @@ import { ProfilService, ProfileGetAllDto, ProfileCreateDto } from '../../../serv
   templateUrl: './admin-profil.component.html',
   styleUrl: './admin-profil.component.sass'
 })
-export class AdminProfilComponent implements OnInit {
+export class AdminProfilComponent implements OnInit, OnDestroy {
+  private signalrSub = new Subscription();
   profiles: ProfileGetAllDto[] = [];
   isLoading = false;
   errorMessage = '';
@@ -24,10 +27,18 @@ export class AdminProfilComponent implements OnInit {
   bulkErrorMessage = '';
   bulkSuccessMessage = '';
 
-  constructor(private profilService: ProfilService) {}
+  constructor(
+    private profilService: ProfilService,
+    private signalrService: SignalrService
+  ) {}
 
   ngOnInit(): void {
     this.loadProfiles();
+    this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => this.loadProfiles()));
+  }
+
+  ngOnDestroy(): void {
+    this.signalrSub.unsubscribe();
   }
 
   loadProfiles(): void {

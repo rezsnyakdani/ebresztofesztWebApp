@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ProfilService, ProfileGetByIdDto, ChangePasswordDto } from '../../services/profil.service';
+import { SignalrService } from '../../services/signalr.service';
 
 @Component({
   selector: 'app-profil',
@@ -9,7 +11,10 @@ import { ProfilService, ProfileGetByIdDto, ChangePasswordDto } from '../../servi
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.sass'
 })
-export class ProfilComponent implements OnInit {
+export class ProfilComponent implements OnInit, OnDestroy {
+  private userId: string | null = null;
+  private signalrSub = new Subscription();
+
   logoutMessage = '';
 
   profile: ProfileGetByIdDto | null = null;
@@ -25,20 +30,30 @@ export class ProfilComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private profilService: ProfilService,
-    private router: Router
+    private router: Router,
+    private signalrService: SignalrService
   ) {}
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
+    this.userId = this.authService.getUserId();
 
-    if (!userId) {
+    if (!this.userId) {
       this.errorMessage = 'Nem található a bejelentkezett felhasználó azonosítója.';
       return;
     }
 
-    this.isLoading = true;
+    this.loadProfile();
+    this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => this.loadProfile()));
+  }
 
-    this.profilService.getById(userId).subscribe({
+  ngOnDestroy(): void {
+    this.signalrSub.unsubscribe();
+  }
+
+  private loadProfile(): void {
+    if (!this.userId) return;
+    this.isLoading = true;
+    this.profilService.getById(this.userId).subscribe({
       next: (data) => {
         this.profile = data;
         this.isLoading = false;
