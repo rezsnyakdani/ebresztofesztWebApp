@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MuhelyService, WorkshopGetDto, WorkshopUpdateDto, WorkshopSessionUpdateDto, WorkshopCreateDto, WorkshopSessionGetDto, RegistrationParticipantDto } from '../../../services/muhely.service';
 import { ProfilService, ProfileGetAllDto } from '../../../services/profil.service';
@@ -10,7 +10,12 @@ import { SignalrService } from '../../../services/signalr.service';
   templateUrl: './admin-muhely.component.html',
   styleUrl: './admin-muhely.component.sass'
 })
-export class AdminMuhelyComponent implements OnInit, OnDestroy {
+export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('participantsPanel') participantsPanelRef!: ElementRef;
+  @ViewChild('createFormSection') createFormSectionRef!: ElementRef;
+  @ViewChild('bulkFormSection') bulkFormSectionRef!: ElementRef;
+
+  private pendingScroll: 'participants' | 'createForm' | 'bulkForm' | 'top' | null = null;
   private signalrSub = new Subscription();
   workshops: WorkshopGetDto[] = [];
   isLoading = false;
@@ -52,6 +57,27 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
       this.loadWorkshops();
       this.loadProfiles();
     }));
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.pendingScroll) return;
+
+    if (this.pendingScroll === 'top') {
+      this.pendingScroll = null;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const refMap: Record<string, ElementRef> = {
+      participants: this.participantsPanelRef,
+      createForm: this.createFormSectionRef,
+      bulkForm: this.bulkFormSectionRef,
+    };
+    const ref = refMap[this.pendingScroll];
+    if (ref?.nativeElement) {
+      this.pendingScroll = null;
+      ref.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   ngOnDestroy(): void {
@@ -112,6 +138,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
     this.selectedProfileId = '';
     this.addParticipantSuccess = '';
     this.addParticipantError = '';
+    this.scrollTo('participants');
   }
 
   closeParticipants(): void {
@@ -122,6 +149,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
     this.selectedProfileId = '';
     this.addParticipantSuccess = '';
     this.addParticipantError = '';
+    this.scrollToTop();
   }
 
   addParticipant(): void {
@@ -199,7 +227,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
     const nap = this.getNapNev(session.startTime);
     const datumKezdes = this.formatDateTime(session.startTime);
     const idoBefejezes = this.formatTime(session.endTime);
-    return `${workshop.title}, ${nap} ${datumKezdes}-${idoBefejezes}, ${session.capacity}/${count} résztvevői:`;
+    return `${workshop.title}, ${nap} ${datumKezdes}-${idoBefejezes}, ${count}/${session.capacity} résztvevői:`;
   }
 
   private formatDateTime(dateStr: string): string {
@@ -214,6 +242,14 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
 
   private pad(n: number): string {
     return n.toString().padStart(2, '0');
+  }
+
+  private scrollTo(target: 'participants' | 'createForm' | 'bulkForm'): void {
+    this.pendingScroll = target;
+  }
+
+  private scrollToTop(): void {
+    this.pendingScroll = 'top';
   }
 
   addSession(): void {
@@ -243,10 +279,12 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
         this.createSuccessMessage = 'Az új műhely sikeresen mentve!';
         this.isSaving = false;
         this.newWorkshop = this.getUresWorkshop();
+        this.scrollTo('createForm');
       },
       error: (err) => {
         this.createErrorMessage = err.message;
         this.isSaving = false;
+        this.scrollTo('createForm');
       }
     });
   }
@@ -263,10 +301,12 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
         this.newWorkshop = this.getUresWorkshop();
         this.editingWorkshopId = null;
         this.loadWorkshops();
+        this.scrollTo('createForm');
       },
       error: (err) => {
         this.createErrorMessage = err.message;
         this.isSaving = false;
+        this.scrollTo('createForm');
       }
     });
   }
@@ -275,6 +315,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
     this.editingWorkshopId = workshop.id;
     this.createErrorMessage = '';
     this.createSuccessMessage = '';
+    this.scrollTo('createForm');
 
     this.newWorkshop = {
       title: workshop.title,
@@ -310,10 +351,16 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
   }
 
   cancelWorkshop(): void {
+    const wasEditing = !!this.editingWorkshopId;
     this.newWorkshop = this.getUresWorkshop();
     this.editingWorkshopId = null;
     this.createErrorMessage = '';
     this.createSuccessMessage = '';
+    if (wasEditing) {
+      this.scrollToTop();
+    } else {
+      this.scrollTo('createForm');
+    }
   }
 
   createManyWorkshops(): void {
@@ -325,6 +372,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
       dtos = JSON.parse(this.bulkJson);
     } catch (e) {
       this.bulkErrorMessage = 'A megadott szöveg nem érvényes JSON formátumú!';
+      this.scrollTo('bulkForm');
       return;
     }
 
@@ -336,10 +384,12 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
         this.bulkSuccessMessage = 'A műhelyek sikeresen létrehozva!';
         this.isBulkSaving = false;
         this.bulkJson = '';
+        this.scrollTo('bulkForm');
       },
       error: (err) => {
         this.bulkErrorMessage = err.message;
         this.isBulkSaving = false;
+        this.scrollTo('bulkForm');
       }
     });
   }
@@ -348,6 +398,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy {
     this.bulkJson = '';
     this.bulkErrorMessage = '';
     this.bulkSuccessMessage = '';
+    this.scrollTo('bulkForm');
   }
 
   readonly sampleJson: string = `[

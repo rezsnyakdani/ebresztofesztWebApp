@@ -10,6 +10,7 @@
   @if (isLoading) {
     <p>Betöltés...</p>
   } @else {
+    <div class="table-wrapper">
     <table class="muhely-table">
       <thead>
         <tr>
@@ -30,10 +31,10 @@
         </tr>
       </thead>
       <tbody>
-        @for (workshop of workshops; track workshop.id) {
+        @for (workshop of workshops; track workshop.id; let wi = $index) {
           @if (workshop.sessions.length > 0) {
             @for (session of workshop.sessions; track session.id; let i = $index) {
-              <tr>
+              <tr [class.row-alt]="wi % 2 === 1">
                 @if (i === 0) {
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.title }}</td>
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.lecturer }}</td>
@@ -43,12 +44,12 @@
                 <td>{{ session.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
                 <td>{{ session.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>
                 <td>{{ session.place }}</td>
-                <td>{{ session.capacity }}/{{session.participants.length}}</td>
+                <td>{{session.participants.length}}/{{ session.capacity }}</td>
                 <td>{{ session.minAge ?? '-' }}</td>
                 <td>{{ session.maxAge ?? '-' }}</td>
                 <td>{{ session.targetGender ?? '-' }}</td>
                 <td>
-                  <button type="button" class="btn-participants" (click)="viewParticipants(workshop, session)">Résztvevők megtekintése</button>
+                  <button type="button" class="btn-participants" (click)="viewParticipants(workshop, session)">Résztvevők</button>
                 </td>
                 @if (i === 0) {
                   <td [attr.rowspan]="workshop.sessions.length">
@@ -61,7 +62,7 @@
               </tr>
             }
           } @else {
-            <tr>
+            <tr [class.row-alt]="wi % 2 === 1">
               <td>{{ workshop.title }}</td>
               <td>{{ workshop.lecturer }}</td>
               <td>{{ workshop.description }}</td>
@@ -78,10 +79,11 @@
         }
       </tbody>
     </table>
+    </div>
   }
 
   @if (selectedSessionTitle) {
-    <div class="participants-panel">
+    <div class="participants-panel" #participantsPanel>
       <h2 class="section-title">{{ selectedSessionTitle }}</h2>
 
       @if (selectedSessionParticipants.length > 0) {
@@ -125,7 +127,7 @@
     </div>
   }
 
-  <h2 class="section-title">Műhely létrehozása, szerkesztése</h2>
+  <h2 class="section-title" #createFormSection>Műhely létrehozása, szerkesztése</h2>
 
   @if (createErrorMessage) {
     <div class="alert error-message">{{ createErrorMessage }}</div>
@@ -211,7 +213,7 @@
     </div>
   </form>
 
-  <h2 class="section-title">Tömeges létrehozás JSON formátumban</h2>
+  <h2 class="section-title" #bulkFormSection>Tömeges létrehozás JSON formátumban</h2>
 
   @if (bulkErrorMessage) {
     <div class="alert error-message">{{ bulkErrorMessage }}</div>
