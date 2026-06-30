@@ -5,6 +5,7 @@ using Logic.Helpers;
 using Logic.Logics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -23,14 +24,17 @@ namespace Backend
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
 
+            builder.Services.AddSignalR();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngularFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:4200") 
-                              .AllowAnyHeader()                     
-                              .AllowAnyMethod();                    
+                        policy.WithOrigins("http://localhost:4200")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
                     });
             });
 
@@ -63,11 +67,11 @@ namespace Backend
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ébresztõ Fesztivál API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ï¿½bresztï¿½ Fesztivï¿½l API", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "Írd be a 'Bearer' szót, egy szóközt, majd a kapott tokent!\r\n\r\nPélda: 'Bearer 12345abcdef'",
+                    Description = "ï¿½rd be a 'Bearer' szï¿½t, egy szï¿½kï¿½zt, majd a kapott tokent!\r\n\r\nPï¿½lda: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -134,6 +138,7 @@ namespace Backend
 
 
             app.MapControllers();
+            app.MapHub<AppHub>("/hubs/app");
 
             app.Run();
         }
