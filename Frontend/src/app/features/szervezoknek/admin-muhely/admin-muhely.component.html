@@ -48,7 +48,7 @@
                 <td>{{ session.maxAge ?? '-' }}</td>
                 <td>{{ session.targetGender ?? '-' }}</td>
                 <td>
-                  <button type="button" class="btn-edit" (click)="viewParticipants(workshop, session)">Résztvevők megtekintése</button>
+                  <button type="button" class="btn-participants" (click)="viewParticipants(workshop, session)">Résztvevők megtekintése</button>
                 </td>
                 @if (i === 0) {
                   <td [attr.rowspan]="workshop.sessions.length">
@@ -87,14 +87,41 @@
       @if (selectedSessionParticipants.length > 0) {
         <ul class="participants-list">
           @for (participant of selectedSessionParticipants; track participant.registrationId) {
-            <li>{{ participant.name }}</li>
+            <li>
+              <span>{{ participant.name }}</span>
+              <button type="button" class="btn-delete-registration" (click)="deleteParticipant(participant)">Jelentkezés törlése</button>
+            </li>
           }
         </ul>
       } @else {
         <p>Nincs résztvevő.</p>
       }
 
-      <button type="button" class="btn-cancel" (click)="closeParticipants()">Bezárás</button>
+      @if (selectedSession && selectedSessionParticipants.length < selectedSession.capacity) {
+        <div class="add-participant-form">
+          @if (addParticipantError) {
+            <div class="error-message">{{ addParticipantError }}</div>
+          }
+          @if (addParticipantSuccess) {
+            <div class="success-message">{{ addParticipantSuccess }}</div>
+          }
+          <div class="input-group">
+            <label for="addParticipantSelect">Résztvevő hozzáadása</label>
+            <select id="addParticipantSelect" name="addParticipantSelect" [(ngModel)]="selectedProfileId">
+              <option value="">-- Válassz résztvevőt --</option>
+              @for (profile of allProfiles; track profile.id) {
+                <option [value]="profile.id">{{ profile.name }} ({{ getAge(profile.birthDate) }} év)</option>
+              }
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="button" class="btn-save" (click)="addParticipant()">Résztvevő hozzáadása</button>
+            <button type="button" class="btn-cancel" (click)="cancelAddParticipant()">Mégse</button>
+          </div>
+        </div>
+      }
+
+      <button type="button" class="btn-cancel close-participants-btn" (click)="closeParticipants()">Bezárás</button>
     </div>
   }
 

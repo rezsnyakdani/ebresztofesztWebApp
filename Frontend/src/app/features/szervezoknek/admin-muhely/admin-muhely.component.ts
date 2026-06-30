@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MuhelyService, WorkshopGetDto, WorkshopUpdateDto, WorkshopSessionUpdateDto, WorkshopCreateDto, WorkshopSessionGetDto, RegistrationParticipantDto } from '../../../services/muhely.service';
+import { ProfilService, ProfileGetAllDto } from '../../../services/profil.service';
 
 @Component({
   selector: 'app-admin-muhely',
@@ -19,18 +20,38 @@ export class AdminMuhelyComponent implements OnInit {
 
   editingWorkshopId: string | null = null;
 
+  allProfiles: ProfileGetAllDto[] = [];
+
   selectedSessionTitle: string | null = null;
   selectedSessionParticipants: RegistrationParticipantDto[] = [];
+  selectedWorkshop: WorkshopGetDto | null = null;
+  selectedSession: WorkshopSessionGetDto | null = null;
+  selectedProfileId: string = '';
+  addParticipantSuccess = '';
+  addParticipantError = '';
 
   bulkJson = '';
   isBulkSaving = false;
   bulkErrorMessage = '';
   bulkSuccessMessage = '';
 
-  constructor(private muhelyService: MuhelyService) {}
+  constructor(
+    private muhelyService: MuhelyService,
+    private profilService: ProfilService
+  ) {}
 
   ngOnInit(): void {
     this.loadWorkshops();
+    this.loadProfiles();
+  }
+
+  loadProfiles(): void {
+    this.profilService.getAll().subscribe({
+      next: (data) => {
+        this.allProfiles = [...data].sort((a, b) => a.name.localeCompare(b.name, 'hu'));
+      },
+      error: () => {}
+    });
   }
 
   loadWorkshops(): void {
@@ -55,18 +76,101 @@ export class AdminMuhelyComponent implements OnInit {
   }
 
   viewParticipants(workshop: WorkshopGetDto, session: WorkshopSessionGetDto): void {
-    const nap = this.getNapNev(session.startTime);
-    const datumKezdes = this.formatDateTime(session.startTime);
-    const idoBefejezes = this.formatTime(session.endTime);
-
-    this.selectedSessionTitle =
-      `${workshop.title}, ${nap} ${datumKezdes}-${idoBefejezes}, ${session.capacity}/${session.participants.length} résztvevői:`;
-    this.selectedSessionParticipants = session.participants;
+    this.selectedWorkshop = workshop;
+    this.selectedSession = session;
+    this.selectedSessionParticipants = [...session.participants];
+    this.selectedSessionTitle = this.buildSessionTitle(workshop, session, this.selectedSessionParticipants.length);
+    this.selectedProfileId = '';
+    this.addParticipantSuccess = '';
+    this.addParticipantError = '';
   }
 
   closeParticipants(): void {
     this.selectedSessionTitle = null;
     this.selectedSessionParticipants = [];
+    this.selectedWorkshop = null;
+    this.selectedSession = null;
+    this.selectedProfileId = '';
+    this.addParticipantSuccess = '';
+    this.addParticipantError = '';
+  }
+
+  addParticipant(): void {
+    if (!this.selectedProfileId) {
+      this.addParticipantError = 'Kérjük válasszon résztvevőt!';
+      return;
+    }
+    this.addParticipantError = '';
+    this.addParticipantSuccess = '';
+
+    this.muhelyService.createRegistration({
+      profileId: this.selectedProfileId,
+      workshopSessionId: this.selectedSession!.id
+    }).subscribe({
+      next: (reg) => {
+        const profile = this.allProfiles.find(p => p.id === this.selectedProfileId);
+        const newParticipant: RegistrationParticipantDto = {
+          registrationId: reg.id,
+          name: profile?.name ?? ''
+        };
+        this.selectedSessionParticipants = [...this.selectedSessionParticipants, newParticipant];
+        const w = this.workshops.find(w => w.id === this.selectedWorkshop!.id);
+        if (w) {
+          const s = w.sessions.find(s => s.id === this.selectedSession!.id);
+          if (s) s.participants = [...this.selectedSessionParticipants];
+        }
+        this.selectedSessionTitle = this.buildSessionTitle(this.selectedWorkshop!, this.selectedSession!, this.selectedSessionParticipants.length);
+        this.selectedProfileId = '';
+        this.addParticipantSuccess = 'A résztvevő sikeresen hozzáadva!';
+      },
+      error: (err) => {
+        this.addParticipantError = err.message;
+      }
+    });
+  }
+
+  deleteParticipant(participant: RegistrationParticipantDto): void {
+    this.muhelyService.deleteRegistration(participant.registrationId).subscribe({
+      next: () => {
+        this.selectedSessionParticipants = this.selectedSessionParticipants.filter(
+          p => p.registrationId !== participant.registrationId
+        );
+        const w = this.workshops.find(w => w.id === this.selectedWorkshop!.id);
+        if (w) {
+          const s = w.sessions.find(s => s.id === this.selectedSession!.id);
+          if (s) s.participants = [...this.selectedSessionParticipants];
+        }
+        this.selectedSessionTitle = this.buildSessionTitle(this.selectedWorkshop!, this.selectedSession!, this.selectedSessionParticipants.length);
+        this.addParticipantSuccess = 'A jelentkezés sikeresen törölve!';
+        this.addParticipantError = '';
+      },
+      error: (err) => {
+        this.addParticipantError = err.message;
+        this.addParticipantSuccess = '';
+      }
+    });
+  }
+
+  cancelAddParticipant(): void {
+    this.selectedProfileId = '';
+    this.addParticipantError = '';
+    this.addParticipantSuccess = '';
+  }
+
+  getAge(birthDate: string): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
+  }
+
+  private buildSessionTitle(workshop: WorkshopGetDto, session: WorkshopSessionGetDto, count: number): string {
+    const nap = this.getNapNev(session.startTime);
+    const datumKezdes = this.formatDateTime(session.startTime);
+    const idoBefejezes = this.formatTime(session.endTime);
+    return `${workshop.title}, ${nap} ${datumKezdes}-${idoBefejezes}, ${session.capacity}/${count} résztvevői:`;
   }
 
   private formatDateTime(dateStr: string): string {

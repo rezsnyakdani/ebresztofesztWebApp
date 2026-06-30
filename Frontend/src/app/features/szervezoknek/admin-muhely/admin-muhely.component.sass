@@ -86,6 +86,27 @@
   .section-title
     margin-top: 0
 
+.add-participant-form
+  margin-top: 16px
+  display: flex
+  flex-direction: column
+  gap: 12px
+
+  select
+    padding: 12px 14px
+    border: 2px solid #e0e0e0
+    border-radius: 10px
+    font-size: 15px
+    color: #28164A
+    font-family: inherit
+    background-color: #ffffff
+    cursor: pointer
+
+    &:focus
+      outline: none
+      border-color: #D91668
+      box-shadow: 0 0 0 4px rgba(217, 22, 104, 0.1)
+
 .participants-list
   list-style: none
   padding: 0
@@ -102,6 +123,36 @@
     border-radius: 8px
     font-size: 14px
     color: #28164A
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: 12px
+
+.btn-delete-registration
+  background-color: transparent
+  color: #D32F2F
+  border: 2px solid #D32F2F
+  padding: 4px 10px
+  border-radius: 6px
+  font-size: 12px
+  font-weight: 600
+  cursor: pointer
+  white-space: nowrap
+  flex-shrink: 0
+
+.btn-participants
+  background-color: transparent
+  color: #6B3FA0
+  border: 2px solid #6B3FA0
+  padding: 6px 12px
+  border-radius: 8px
+  font-size: 13px
+  font-weight: 600
+  cursor: pointer
+  white-space: nowrap
+
+.close-participants-btn
+  margin-top: 16px
 
 .section-title
   color: #28164A
