@@ -2,8 +2,12 @@
   padding: 20px
   padding-top: 40px
 
+  @media (max-width: 480px)
+    padding: 16px 12px
+    padding-top: 24px
+
 .page-title
-  color: #28164A // Sötétlila
+  color: #28164A
   font-size: 28px
   margin-bottom: 24px
   font-weight: 700
@@ -16,13 +20,12 @@
   display: flex
   flex-direction: column
   align-items: center
+  max-width: 600px
+  margin-left: auto
+  margin-right: auto
 
-.avatar-container
-  margin-bottom: 24px
-  
-  .avatar-icon
-    font-size: 80px
-    color: #19A7A6 // Ciánkék profil ikon
+  @media (max-width: 480px)
+    padding: 20px 16px
 
 .profile-details
   width: 100%
@@ -44,15 +47,13 @@
     font-size: 12px
     color: #888888
     margin-bottom: 4px
-    text-transform: uppercase // Csupa nagybetűs, apró címkék
+    text-transform: uppercase
     letter-spacing: 0.5px
 
   .detail-value
     font-size: 16px
     color: #28164A
     font-weight: 500
-
-
 
 .action-buttons
   width: 100%
@@ -63,8 +64,8 @@
 .btn-outline
   width: 100%
   background-color: transparent
-  color: #D91668 // Magenta szöveg
-  border: 2px solid #D91668 // Magenta keret
+  color: #D91668
+  border: 2px solid #D91668
   padding: 12px
   border-radius: 8px
   font-size: 16px
@@ -158,8 +159,8 @@
 
 .btn-logout
   width: 100%
-  background-color: #FCE4E4 // Halványpiros háttér
-  color: #D32F2F // Sötétpiros szöveg
+  background-color: #FCE4E4
+  color: #D32F2F
   border: none
   padding: 12px
   border-radius: 8px
@@ -173,24 +174,30 @@
   transition: all 0.2s
 
   &:active
-    background-color: #F8CACA // Mobilos kattintásnál kicsit sötétebb lesz a háttér
+    background-color: #F8CACA
 
   .material-icons
     font-size: 20px
 
 .my-workshops
-  width: 100%
-  margin-top: 10px
+  max-width: 600px
+  margin-left: auto
+  margin-right: auto
+  margin-top: 24px
   margin-bottom: 32px
-  border-top: 1px dashed #e0e0e0 // Egy szaggatott vonal választja el a személyes adatoktól
+  border-top: 1px dashed #e0e0e0
   padding-top: 24px
 
 .section-title
-  color: #28164A // Sötétlila
+  color: #28164A
   font-size: 18px
   margin-top: 0
   margin-bottom: 16px
   font-weight: 700
+
+.no-registrations
+  color: #888888
+  font-size: 14px
 
 .registered-workshop-card
   background-color: #fcfcfc
@@ -198,13 +205,13 @@
   padding: 16px
   border-radius: 10px
   margin-bottom: 16px
-  border-left: 4px solid #19A7A6 // Ciánkék csík a bal oldalon, hogy vizuálisan elkülönüljön
+  border-left: 4px solid #D91668
 
   &:last-child
     margin-bottom: 0
 
   .day-badge
-    background-color: #19A7A6 // Ciánkék nap jelölő
+    background-color:#19A7A6
     color: #ffffff
     padding: 4px 10px
     border-radius: 4px
@@ -216,7 +223,7 @@
     letter-spacing: 0.5px
 
   .workshop-title
-    color: #D91668 // Magenta cím
+    color: #D91668
     font-size: 15px
     margin-top: 0
     margin-bottom: 10px
@@ -231,10 +238,80 @@
     font-size: 13px
     margin-bottom: 6px
     font-weight: 500
-    
-    &:last-child
-      margin-bottom: 0
-    
+
     .material-icons
       font-size: 16px
-      color: #19A7A6 // Kis ciánkék ikonok az időpont/helyszín mellett
+      color: #19A7A6
+
+.workshop-conditions
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+  margin-top: 8px
+  margin-bottom: 4px
+
+.condition-badge
+  background-color: #f0ecf8
+  color: #6B3FA0
+  font-size: 11px
+  font-weight: 600
+  padding: 3px 8px
+  border-radius: 4px
+  border: 1px solid #d9cff0
+
+.toggle-participants-btn
+  background: none
+  border: none
+  cursor: pointer
+  color: #D91668
+  font-size: 13px
+  font-weight: 700
+  display: flex
+  align-items: center
+  gap: 2px
+  padding: 8px 0 0 0
+  margin-top: 6px
+  transition: opacity 0.15s
+
+  &:hover
+    opacity: 0.75
+
+  .toggle-label
+    text-decoration: underline
+
+  .toggle-icon
+    font-size: 20px
+    text-decoration: none
+
+.participants-collapse
+  max-height: 0
+  overflow: hidden
+  transition: max-height 0.35s ease
+
+  &.open
+    max-height: 800px
+
+.participants-collapse-inner
+  padding-top: 10px
+
+.participants-names
+  list-style: none
+  padding: 10px 14px
+  margin: 0
+  background-color: #fdf0f5
+  border-radius: 8px
+  border-left: 4px solid #D91668
+  display: flex
+  flex-direction: column
+  gap: 6px
+
+  li
+    font-size: 13px
+    color: #28164A
+    font-weight: 500
+
+.no-participants
+  font-size: 13px
+  color: #888888
+  margin: 0
+  padding: 8px 0
