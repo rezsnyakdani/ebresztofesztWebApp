@@ -2,74 +2,120 @@
 <div class="muhely-container">
   <h1 class="page-title">Tematikus műhelyek</h1>
 
-  <section class="workshop-card">
-    <h2 class="workshop-title">Hogyan legyek boldog és sikeres a párkapcsolatban?</h2>
-    
-    <div class="workshop-info">
-      <div class="info-row">
-        <span class="material-icons">person</span> Mészáros Gabriella (mentálhigiénés szakember)
-      </div>
-      <div class="info-row">
-        <span class="material-icons">place</span> 1-es műhelysátor
-      </div>
-    </div>
+  @if (errorMessage) {
+    <div class="global-error">{{ errorMessage }}</div>
+  }
 
-    <div class="workshop-badges">
-      <span class="badge condition">Csak lányoknak</span>
-      <span class="badge condition">16+ év</span>
-      <span class="badge capacity">Létszám: 12/20</span>
-    </div>
-    
-    <div class="workshop-desc">
-      <p>Mindannyian vágyunk a boldogságra, és nagyon sokan úgy gondolják, a boldog élet kulcsa egy jól működő, harmonikus párkapcsolat.</p>
-      <p>De hogy lehet ezt elérni és fenntartani? Min múlik a siker és mi okozza a legtöbb problémát? Ezen a műhelyen körbejárjuk a leggyakrabban felmerülő kérdéseket: Milyen egy egészséges párkapcsolat? Miből veszem észre, ha valami nem működik jól? Hogyan lehet javítani a kommunikáción? Mik a konfliktuskezelés alapjai?</p>
-      <p>A műhely interaktív, így lehetőség lesz a saját kérdések, tapasztalatok megosztására is.</p>
-    </div>
+  @if (isLoading) {
+    <p class="loading-text">Betöltés...</p>
+  } @else if (workshops.length === 0) {
+    <p class="empty-text">Még nincsenek meghirdetett műhelyek.</p>
+  } @else {
+    @for (workshop of workshops; track workshop.id) {
+      <div class="workshop-card">
+        <h2 class="workshop-title">{{ workshop.title }}</h2>
 
-    <div class="workshop-actions">
-      <h3>Jelentkezés a műhelyre:</h3>
-      <div class="button-group">
-        <button class="btn-primary" type="button">
-          <span class="material-icons">event_available</span> Péntek (10:00 - 12:00)
-        </button>
-        <button class="btn-primary" type="button">
-          <span class="material-icons">event_available</span> Szombat (10:00 - 12:00)
-        </button>
-      </div>
-    </div>
-  </section>
+        
+        <p class="workshop-desc">{{ workshop.description }}</p>
+        
+        @if (workshop.sessions.length === 0) {
+          <p class="no-sessions">Ehhez a műhelyhez még nincs meghirdetett alkalom.</p>
+        } @else {
+          <div class="sessions-list">
+            @for (session of sortedSessions(workshop); track session.id; let si = $index) {
+              <div class="session-card">
+                <div class="session-number">{{ si + 1 }}. Műhely alkalom</div>
+                
+                
+                <div class="session-datetime">
+                  <span class="day-badge">{{ getNapNev(session.startTime) }}</span>
+                </div>
 
-  <section class="workshop-card">
-    <h2 class="workshop-title">Példa Műhely Címe</h2>
-    
-    <div class="workshop-info">
-      <div class="info-row">
-        <span class="material-icons">person</span> Másik Előadó
-      </div>
-      <div class="info-row">
-        <span class="material-icons">place</span> 2-es műhelysátor
-      </div>
-    </div>
+                <div class="session-info-row">
+                  <span class="material-icons">schedule</span>
+                  <span>{{ formatDate(session.startTime) }} {{ formatTime(session.startTime) }} – {{ formatTime(session.endTime) }}</span>
+                </div>
 
-    <div class="workshop-badges">
-      <span class="badge condition">Mindenkinek</span>
-      <span class="badge capacity-full">Betelt (20/20)</span>
-    </div>
-    
-    <div class="workshop-desc">
-      <p>Ide jöhet a második műhely leírása...</p>
-    </div>
+                  <div class="session-info-row">
+                    <span class="material-icons">person</span>
+                    <span>{{ workshop.lecturer }}</span>
+                  </div>
 
-    <div class="workshop-actions">
-      <h3>Jelentkezés a műhelyre:</h3>
-      <div class="button-group">
-        <button class="btn-disabled" type="button" disabled>
-          <span class="material-icons">event_busy</span> Péntek (Betelt)
-        </button>
-        <button class="btn-primary" type="button">
-          <span class="material-icons">event_available</span> Szombat (10:00 - 12:00)
-        </button>
+                <div class="session-info-row">
+                  <span class="material-icons">place</span>
+                  <span>{{ session.place }}</span>
+                </div>
+
+                <div class="session-info-row">
+                  <span class="material-icons">people</span>
+                  <span>{{ session.participants.length }}/{{ session.capacity }} résztvevő</span>
+                </div>
+
+                @if (session.minAge || session.maxAge || session.targetGender) {
+                  <div class="session-conditions">
+                    @if (session.minAge) {
+                      <span class="condition-badge">Min. {{ session.minAge }} év</span>
+                    }
+                    @if (session.maxAge) {
+                      <span class="condition-badge">Max. {{ session.maxAge }} év</span>
+                    }
+                    @if (session.targetGender === 'Férfi') {
+                      <span class="condition-badge">Csak fiúknak</span>
+                    }
+                    @if (session.targetGender === 'Nő') {
+                      <span class="condition-badge">Csak lányoknak</span>
+                    }
+                  </div>
+                }
+
+                <button class="toggle-participants-btn" type="button" (click)="toggleParticipants(session.id)">
+                  <span class="toggle-label">Résztvevők</span>
+                  <span class="material-icons toggle-icon">{{ isExpanded(session.id) ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</span>
+                </button>
+
+                <div class="participants-collapse" [class.open]="isExpanded(session.id)">
+                  <div class="participants-collapse-inner">
+                    @if (session.participants.length > 0) {
+                      <ul class="participants-names">
+                        @for (p of sortedParticipants(session); track p.registrationId) {
+                          <li>{{ p.name }}</li>
+                        }
+                      </ul>
+                    } @else {
+                      <p class="no-participants">Még nincs jelentkező.</p>
+                    }
+                  </div>
+                </div>
+
+                <div class="signup-area">
+                  @if (!isLoggedIn) {
+                    <p class="login-required">A műhelyre jelentkezéshez bejelentkezés szükséges!</p>
+                    <button type="button" class="btn-signup btn-disabled" (click)="goToLogin()">Jelentkezés</button>
+                  } @else {
+                    @if (getSessionMessage(session.id).error) {
+                      <div class="session-error">{{ getSessionMessage(session.id).error }}</div>
+                    }
+                    @if (getSessionMessage(session.id).success) {
+                      <div class="session-success">{{ getSessionMessage(session.id).success }}</div>
+                    }
+                    @if (isRegistered(session.id)) {
+                      <button type="button" class="btn-unregister" (click)="unregister(session.id)">
+                        <span class="material-icons">close</span>
+                        Jelentkezés törlése
+                      </button>
+                    } @else {
+                      <button type="button" class="btn-signup" (click)="register(session.id)">
+                        <span class="material-icons">how_to_reg</span>
+                        Jelentkezés
+                      </button>
+                    }
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
-  </section>
+    }
+  }
 </div>

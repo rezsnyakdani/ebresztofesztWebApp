@@ -1,12 +1,35 @@
 .muhely-container
   padding: 20px
-  padding-top: 40px
+  padding-top: 32px
+  max-width: 700px
+  margin-left: auto
+  margin-right: auto
+
+  @media (max-width: 480px)
+    padding: 16px 12px
+    padding-top: 24px
 
 .page-title
-  color: #28164A // Sötétlila
-  font-size: 28px
-  margin-bottom: 24px
+  color: #28164A
+  font-size: 24px
   font-weight: 700
+  margin-bottom: 20px
+
+  @media (max-width: 480px)
+    font-size: 20px
+
+.loading-text, .empty-text
+  color: #888888
+  font-size: 14px
+
+.global-error
+  background-color: #FCE4E4
+  color: #D32F2F
+  padding: 12px 16px
+  border-radius: 8px
+  margin-bottom: 16px
+  font-size: 14px
+  font-weight: 500
 
 .workshop-card
   background-color: #ffffff
@@ -15,119 +38,260 @@
   margin-bottom: 24px
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05)
 
-  .workshop-title
-    color: #D91668 // Magenta főcím
+  @media (max-width: 480px)
+    padding: 16px 12px
+
+.workshop-title
+  color: #D91668
+  font-size: 20px
+  margin-top: 0
+  margin-bottom: 10px
+  font-weight: 700
+  line-height: 1.3
+
+  @media (max-width: 480px)
+    font-size: 17px
+
+.workshop-meta
+  margin-bottom: 12px
+
+.meta-row
+  display: flex
+  align-items: center
+  gap: 6px
+  color: #555555
+  font-size: 14px
+  font-weight: 500
+
+  .material-icons
+    font-size: 16px
+    color: #19A7A6
+
+.workshop-desc
+  color: #444444
+  font-size: 14px
+  line-height: 1.6
+  margin-top: 0
+  margin-bottom: 16px
+  text-align: justify
+
+.no-sessions
+  color: #888888
+  font-size: 13px
+  margin: 0
+
+.sessions-list
+  display: flex
+  flex-direction: column
+  gap: 12px
+  border-top: 1px dashed #e0e0e0
+  padding-top: 16px
+
+.session-card
+  background-color: #f9f9f9
+  border: 1px solid #efefef
+  border-left: 4px solid #D91668
+  border-radius: 10px
+  padding: 14px 16px
+
+  @media (max-width: 480px)
+    padding: 12px
+
+.session-number
+  font-size: 11px
+  font-weight: 700
+  text-transform: uppercase
+  letter-spacing: 0.6px
+  color: #888888
+  margin-bottom: 10px
+
+.session-datetime
+  display: flex
+  align-items: center
+  gap: 10px
+  margin-bottom: 10px
+  flex-wrap: wrap
+
+.day-badge
+  background-color: #19A7A6
+  color: #ffffff
+  padding: 4px 10px
+  border-radius: 4px
+  font-size: 11px
+  font-weight: 700
+  text-transform: uppercase
+  letter-spacing: 0.5px
+  white-space: nowrap
+
+.session-time
+  font-size: 14px
+  font-weight: 600
+  color: #28164A
+
+.session-info-row
+  display: flex
+  align-items: center
+  gap: 6px
+  color: #555555
+  font-size: 13px
+  font-weight: 500
+  margin-bottom: 6px
+
+  .material-icons
+    font-size: 16px
+    color: #19A7A6
+
+.session-conditions
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+  margin-top: 8px
+  margin-bottom: 4px
+
+.condition-badge
+  background-color: #f0ecf8
+  color: #6B3FA0
+  font-size: 11px
+  font-weight: 600
+  padding: 3px 8px
+  border-radius: 4px
+  border: 1px solid #d9cff0
+
+.toggle-participants-btn
+  background: none
+  border: none
+  cursor: pointer
+  color: #D91668
+  font-size: 13px
+  font-weight: 700
+  display: flex
+  align-items: center
+  gap: 2px
+  padding: 8px 0 4px 0
+  margin-top: 6px
+  transition: opacity 0.15s
+
+  &:hover
+    opacity: 0.75
+
+  .toggle-label
+    text-decoration: underline
+
+  .toggle-icon
     font-size: 20px
-    margin-top: 0
-    margin-bottom: 12px
-    font-weight: 700
-    line-height: 1.3
 
-  .workshop-info
-    margin-bottom: 16px
-    
-    .info-row
-      display: flex
-      align-items: center
-      gap: 6px
-      color: #28164A // Sötétlila infók
-      font-size: 14px
-      font-weight: 600
-      margin-bottom: 6px
-      
-      .material-icons
-        font-size: 18px
-        color: #19A7A6 // Ciánkék ikonok
+.participants-collapse
+  max-height: 0
+  overflow: hidden
+  transition: max-height 0.35s ease
 
-  // Feltételek és létszám címkék stílusai
-  .workshop-badges
-    display: flex
-    flex-wrap: wrap
-    gap: 8px
-    margin-bottom: 16px
-    border-bottom: 1px solid #f0f0f0
-    padding-bottom: 16px
-    
-    .badge
-      padding: 4px 10px
-      border-radius: 16px
-      font-size: 12px
-      font-weight: 700
-      
-    .condition
-      background-color: #E8F6F6 // Halvány ciánkék háttér
-      color: #19A7A6 // Ciánkék szöveg
-      
-    .capacity
-      background-color: #FBE6EE // Halvány magenta háttér
-      color: #D91668 // Magenta szöveg
+  &.open
+    max-height: 800px
 
-    .capacity-full
-      background-color: #F5F5F5
-      color: #888888
+.participants-collapse-inner
+  padding-bottom: 8px
 
-  .workshop-desc
-    color: #444444
-    font-size: 15px
-    line-height: 1.6
-    text-align: justify
-    margin-bottom: 24px
-    
-    p
-      margin-top: 0
-      margin-bottom: 12px
+.participants-names
+  list-style: none
+  padding: 10px 14px
+  margin: 0
+  background-color: #fdf0f5
+  border-radius: 8px
+  border-left: 4px solid #D91668
+  display: flex
+  flex-direction: column
+  gap: 6px
 
-  .workshop-actions
-    h3
-      font-size: 13px
-      color: #888888
-      text-transform: uppercase
-      margin-bottom: 10px
-      margin-top: 0
-    
-    .button-group
-      display: flex
-      flex-direction: column
-      gap: 10px
-      
-      // Alap gomb (pl. még van hely)
-      .btn-primary
-        width: 100%
-        background-color: #19A7A6 // Ciánkék gomb
-        color: #ffffff
-        border: none
-        padding: 12px
-        border-radius: 8px
-        font-size: 15px
-        font-weight: 600
-        display: flex
-        align-items: center
-        justify-content: center
-        gap: 8px
-        cursor: pointer
-        transition: transform 0.1s
-        
-        &:active
-          transform: scale(0.98) // Gombnyomás effekt mobilon
-          
-        .material-icons
-          font-size: 20px
+  li
+    font-size: 13px
+    color: #28164A
+    font-weight: 500
 
-      // Inaktív gomb (pl. betelt)
-      .btn-disabled
-        width: 100%
-        background-color: #f0f0f0
-        color: #a0a0a0
-        border: none
-        padding: 12px
-        border-radius: 8px
-        font-size: 15px
-        font-weight: 600
-        display: flex
-        align-items: center
-        justify-content: center
-        gap: 8px
-        cursor: not-allowed
+.no-participants
+  font-size: 13px
+  color: #888888
+  margin: 0
+  padding: 4px 0
 
-        .material-icons
-          font-size: 20px
+.signup-area
+  margin-top: 12px
+  padding-top: 12px
+  border-top: 1px solid #efefef
+  display: flex
+  flex-direction: column
+  gap: 8px
+
+.login-required
+  font-size: 12px
+  color: #888888
+  margin: 0
+  font-style: italic
+
+.session-error
+  background-color: #FCE4E4
+  color: #D32F2F
+  padding: 8px 12px
+  border-radius: 6px
+  font-size: 13px
+  font-weight: 500
+  white-space: pre-line
+
+.session-success
+  background-color: #E1F5E4
+  color: #2E7D32
+  padding: 8px 12px
+  border-radius: 6px
+  font-size: 13px
+  font-weight: 500
+
+.btn-signup
+  width: 100%
+  background-color: #19A7A6
+  color: #ffffff
+  border: none
+  padding: 11px
+  border-radius: 8px
+  font-size: 14px
+  font-weight: 600
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 6px
+  cursor: pointer
+  transition: opacity 0.15s
+
+  &:hover
+    opacity: 0.85
+
+  &.btn-disabled
+    background-color: #e0e0e0
+    color: #a0a0a0
+    cursor: not-allowed
+
+    &:hover
+      opacity: 1
+
+  .material-icons
+    font-size: 18px
+
+.btn-unregister
+  width: 100%
+  background-color: transparent
+  color: #D32F2F
+  border: 2px solid #D32F2F
+  padding: 9px
+  border-radius: 8px
+  font-size: 14px
+  font-weight: 600
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 6px
+  cursor: pointer
+  transition: opacity 0.15s
+
+  &:hover
+    opacity: 0.75
+
+  .material-icons
+    font-size: 18px
