@@ -41,6 +41,7 @@
   overflow-x: auto
   border-radius: 12px
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04)
+  padding-bottom: 2px
 
 .row-alt td
   background-color: #f5f3fa
@@ -72,6 +73,15 @@
 
   tr:last-child td
     border-bottom: none
+
+.desc-cell
+  max-width: 260px
+
+  .desc-text
+    overflow: hidden
+    display: -webkit-box
+    -webkit-line-clamp: 4
+    -webkit-box-orient: vertical
 
 .btn-edit
   background-color: transparent

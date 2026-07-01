@@ -28,7 +28,7 @@
           @for (lecture of lectures; track lecture.id; let i = $index) {
             <tr [class.row-alt]="i % 2 === 1">
               <td>{{ lecture.lecturerName }}</td>
-              <td class="desc-cell">{{ lecture.description }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ lecture.description }}</div></td>
               <td>{{ getNapNev(lecture.startTime) }}</td>
               <td>{{ lecture.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
               <td>{{ lecture.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>

@@ -75,9 +75,12 @@
 
 .desc-cell
   max-width: 260px
-  overflow: hidden
-  text-overflow: ellipsis
-  white-space: nowrap
+
+  .desc-text
+    overflow: hidden
+    display: -webkit-box
+    -webkit-line-clamp: 4
+    -webkit-box-orient: vertical
 
 .image-cell
   width: 80px

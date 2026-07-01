@@ -38,7 +38,7 @@
                 @if (i === 0) {
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.title }}</td>
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.lecturer }}</td>
-                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.description }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length" class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
                 }
                 <td>{{ getNapNev(session.startTime) }}</td>
                 <td>{{ session.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
@@ -65,7 +65,7 @@
             <tr [class.row-alt]="wi % 2 === 1">
               <td>{{ workshop.title }}</td>
               <td>{{ workshop.lecturer }}</td>
-              <td>{{ workshop.description }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
               <td colspan="8">Nincs hozzá rendelt alkalom</td>
               <td></td>
               <td>
