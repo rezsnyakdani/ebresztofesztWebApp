@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ProfilService, ProfileGetByIdDto, ChangePasswordDto } from '../../services/profil.service';
-import { MuhelyService, WorkshopGetDto, WorkshopRegistrationGetDto, WorkshopSessionGetDto } from '../../services/muhely.service';
+import { MuhelyService, WorkshopGetDto, WorkshopRegistrationGetDto, WorkshopSessionGetDto, RegistrationParticipantDto } from '../../services/muhely.service';
 import { SignalrService } from '../../services/signalr.service';
 
 export interface EnrichedRegistration {
@@ -122,6 +122,10 @@ export class ProfilComponent implements OnInit, OnDestroy {
 
   isExpanded(regId: string): boolean {
     return this.expandedIds.has(regId);
+  }
+
+  sortedParticipants(participants: RegistrationParticipantDto[]): RegistrationParticipantDto[] {
+    return [...participants].sort((a, b) => a.name.localeCompare(b.name, 'hu'));
   }
 
   getNapNev(dateStr: string): string {

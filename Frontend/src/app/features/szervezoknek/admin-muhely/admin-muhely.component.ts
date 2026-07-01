@@ -121,7 +121,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
 
     this.selectedWorkshop = updatedWorkshop;
     this.selectedSession = updatedSession;
-    this.selectedSessionParticipants = [...updatedSession.participants];
+    this.selectedSessionParticipants = [...updatedSession.participants].sort((a, b) => a.name.localeCompare(b.name, 'hu'));
     this.selectedSessionTitle = this.buildSessionTitle(updatedWorkshop, updatedSession, this.selectedSessionParticipants.length);
   }
 
@@ -133,7 +133,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
   viewParticipants(workshop: WorkshopGetDto, session: WorkshopSessionGetDto): void {
     this.selectedWorkshop = workshop;
     this.selectedSession = session;
-    this.selectedSessionParticipants = [...session.participants];
+    this.selectedSessionParticipants = [...session.participants].sort((a, b) => a.name.localeCompare(b.name, 'hu'));
     this.selectedSessionTitle = this.buildSessionTitle(workshop, session, this.selectedSessionParticipants.length);
     this.selectedProfileId = '';
     this.addParticipantSuccess = '';
@@ -170,7 +170,7 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
           registrationId: reg.id,
           name: profile?.name ?? ''
         };
-        this.selectedSessionParticipants = [...this.selectedSessionParticipants, newParticipant];
+        this.selectedSessionParticipants = [...this.selectedSessionParticipants, newParticipant].sort((a, b) => a.name.localeCompare(b.name, 'hu'));
         const w = this.workshops.find(w => w.id === this.selectedWorkshop!.id);
         if (w) {
           const s = w.sessions.find(s => s.id === this.selectedSession!.id);

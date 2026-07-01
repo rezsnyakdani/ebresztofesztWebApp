@@ -100,8 +100,8 @@
     } @else {
       @for (item of registrations; track item.reg.id) {
         <div class="registered-workshop-card">
-          <div class="day-badge">{{ getNapNev(item.reg.startTime) }}</div>
           <h3 class="workshop-title">{{ item.workshopTitle }}</h3>
+          <div class="day-badge">{{ getNapNev(item.reg.startTime) }}</div>
 
           <div class="workshop-info">
             <span class="material-icons">schedule</span>
@@ -155,7 +155,7 @@
             <div class="participants-collapse-inner">
               @if (item.session && item.session.participants.length > 0) {
                 <ul class="participants-names">
-                  @for (p of item.session.participants; track p.registrationId) {
+                  @for (p of sortedParticipants(item.session.participants); track p.registrationId) {
                     <li>{{ p.name }}</li>
                   }
                 </ul>
