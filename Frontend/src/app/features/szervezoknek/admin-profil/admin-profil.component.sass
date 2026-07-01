@@ -1,11 +1,22 @@
 .admin-profil-container
-  padding: 20px
+  padding: 32px 24px
+
+  @media (max-width: 768px)
+    padding: 16px 12px
 
 .page-title
   color: #28164A
   font-size: 24px
   font-weight: 700
   margin-bottom: 20px
+
+  @media (max-width: 480px)
+    font-size: 20px
+
+.alert
+  max-width: 900px
+  margin-left: auto
+  margin-right: auto
 
 .error-message
   background-color: #FCE4E4
@@ -17,13 +28,29 @@
   font-weight: 500
   white-space: pre-line
 
+.success-message
+  background-color: #E1F5E4
+  color: #2E7D32
+  padding: 12px 16px
+  border-radius: 8px
+  margin-bottom: 16px
+  font-size: 14px
+  font-weight: 500
+
+.table-wrapper
+  overflow-x: auto
+  border-radius: 12px
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04)
+
+.row-alt td
+  background-color: #f5f3fa
+
 .profil-table
   width: 100%
   border-collapse: collapse
   background-color: #ffffff
   border-radius: 12px
   overflow: hidden
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04)
 
   th
     background-color: #28164A
@@ -34,12 +61,14 @@
     font-weight: 600
     text-transform: uppercase
     letter-spacing: 0.5px
+    white-space: nowrap
 
   td
     padding: 12px 16px
     font-size: 14px
     color: #28164A
     border-bottom: 1px solid #f0f0f0
+    vertical-align: middle
 
   tr:last-child td
     border-bottom: none
@@ -66,23 +95,113 @@
   cursor: pointer
   white-space: nowrap
 
-.success-message
-  background-color: #E1F5E4
-  color: #2E7D32
-  padding: 12px 16px
+.btn-registrations
+  background-color: transparent
+  color: #6B3FA0
+  border: 2px solid #6B3FA0
+  padding: 6px 12px
   border-radius: 8px
+  font-size: 13px
+  font-weight: 600
+  cursor: pointer
+  white-space: nowrap
+
+.btn-delete-registration
+  background-color: transparent
+  color: #D32F2F
+  border: 2px solid #D32F2F
+  padding: 4px 10px
+  border-radius: 6px
+  font-size: 12px
+  font-weight: 600
+  cursor: pointer
+  white-space: nowrap
+  flex-shrink: 0
+
+.registrations-panel
+  max-width: 900px
+  margin-left: auto
+  margin-right: auto
+  background-color: #ffffff
+  padding: 20px
+  border-radius: 12px
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04)
+  margin-top: 24px
+  scroll-margin-top: 70px
+
+  @media (max-width: 480px)
+    padding: 16px 12px
+
+.panel-title
+  color: #28164A
+  font-size: 18px
+  font-weight: 700
+  margin-top: 0
   margin-bottom: 16px
-  font-size: 14px
-  font-weight: 500
+
+.registrations-list
+  list-style: none
+  padding: 0
+  margin: 0 0 16px 0
+  display: flex
+  flex-direction: column
+  gap: 8px
+
+  li
+    background-color: #fcfcfc
+    border: 1px solid #f0f0f0
+    border-left: 4px solid #6B3FA0
+    padding: 10px 14px
+    border-radius: 8px
+    font-size: 14px
+    color: #28164A
+    display: flex
+    justify-content: space-between
+    align-items: center
+    gap: 12px
+
+.add-registration-form
+  margin-top: 16px
+  display: flex
+  flex-direction: column
+  gap: 12px
+
+  select
+    padding: 12px 14px
+    border: 2px solid #e0e0e0
+    border-radius: 10px
+    font-size: 15px
+    color: #28164A
+    font-family: inherit
+    background-color: #ffffff
+    cursor: pointer
+
+    &:focus
+      outline: none
+      border-color: #D91668
+      box-shadow: 0 0 0 4px rgba(217, 22, 104, 0.1)
+
+.close-panel-btn
+  margin-top: 16px
 
 .section-title
+  max-width: 900px
+  margin-left: auto
+  margin-right: auto
   color: #28164A
   font-size: 20px
   font-weight: 700
   margin-top: 32px
   margin-bottom: 16px
+  scroll-margin-top: 70px
+
+  @media (max-width: 480px)
+    font-size: 17px
 
 .create-form
+  max-width: 900px
+  margin-left: auto
+  margin-right: auto
   background-color: #ffffff
   padding: 20px
   border-radius: 12px
@@ -90,6 +209,9 @@
   display: flex
   flex-direction: column
   gap: 16px
+
+  @media (max-width: 480px)
+    padding: 16px 12px
 
 .input-group
   display: flex
@@ -101,7 +223,7 @@
     font-size: 14px
     font-weight: 600
 
-  input, textarea
+  input, textarea, select
     padding: 12px 14px
     border: 2px solid #e0e0e0
     border-radius: 10px
@@ -122,6 +244,9 @@
   display: flex
   gap: 12px
   margin-top: 8px
+
+  @media (max-width: 480px)
+    flex-direction: column
 
 .btn-save
   flex: 1
