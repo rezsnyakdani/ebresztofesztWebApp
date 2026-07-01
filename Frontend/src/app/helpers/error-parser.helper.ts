@@ -1,29 +1,36 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 export function parseErrorMessage(error: HttpErrorResponse): string {
-  let errorMessage = 'Váratlan hiba történt a szerverrel való kommunikáció során.';
+  const fallback = 'Váratlan hiba történt a szerverrel való kommunikáció során.';
 
   if (error.error instanceof ErrorEvent) {
     return `Hálózati hiba: ${error.error.message}`;
   }
 
-  if (error.error) {
-    if (typeof error.error === 'object' && error.error.detail) {
-      return error.error.detail;
-    }
-
-    if (typeof error.error === 'string') {
-      return error.error;
-    }
-
-    if (typeof error.error === 'object' && error.error.message) {
-      return error.error.message;
-    }
+  // Angular sometimes doesn't auto-parse application/problem+json — try manual parse
+  let body = error.error;
+  if (typeof body === 'string' && body.trim().startsWith('{')) {
+    try { body = JSON.parse(body); } catch {}
   }
 
-  if (error.statusText) {
-    return `Hiba (${error.status}): ${error.statusText}`;
+  if (body && typeof body === 'object') {
+    // ProblemDetails: { detail: "..." }
+    if (body.detail) return body.detail;
+
+    // ValidationProblemDetails: { errors: { Field: ["msg1", ...] } }
+    if (body.errors && typeof body.errors === 'object') {
+      const messages = (Object.values(body.errors) as string[][]).flat().filter(Boolean);
+      if (messages.length > 0) return messages.join('\n');
+    }
+
+    // Generic { title: "..." } fallback
+    if (body.title) return body.title;
+
+    // Angular Error object
+    if (body.message) return body.message;
   }
 
-  return errorMessage;
+  if (error.status === 0) return 'A szerver nem elérhető.';
+
+  return fallback;
 }

@@ -11,20 +11,20 @@ namespace Entities.Dtos
     {
         public string LecturerName { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
-        public IFormFile? Image { get; set; } 
+        public IFormFile? Image { get; set; }
     }
 
     public class LectureUpdateDto
     {
         public string LecturerName { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
-        public IFormFile? Image { get; set; } 
+        public IFormFile? Image { get; set; }
     }
 
     public class LectureBulkDto
