@@ -8,6 +8,7 @@ using Data.Repositories;
 using Entities.Dtos;
 using Entities.Models;
 using Logic.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Logic.Logics
@@ -16,11 +17,13 @@ namespace Logic.Logics
     {
         private readonly IRepository<InfoBlock> _repository;
         private readonly IMapper _mapper;
+        private readonly IHubContext<AppHub> _hubContext;
 
-        public InfoBlockLogic(IRepository<InfoBlock> repository, IMapper mapper)
+        public InfoBlockLogic(IRepository<InfoBlock> repository, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _repository = repository;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         private void CheckRole(string role)
@@ -55,20 +58,33 @@ namespace Logic.Logics
             return infoBlock;
         }
 
+        private async Task CheckUniqueOrderIndex(int orderIndex, string? excludeId = null)
+        {
+            var existing = await _repository.GetAll()
+                .Where(x => x.OrderIndex == orderIndex && x.Id != excludeId)
+                .AnyAsync();
+            if (existing)
+                throw new BadRequestException($"A {orderIndex}. sorrendi szám már foglalt egy másik blokk által. Kérjük válassz másik sorszámot!");
+        }
+
         public async Task<InfoBlock> CreateAsync(InfoBlockDto dto, string userRole)
         {
             CheckRole(userRole);
             ValidateDto(dto);
+            await CheckUniqueOrderIndex(dto.OrderIndex);
 
             var infoBlock = _mapper.Map<InfoBlock>(dto);
 
-            return await _repository.CreateAsync(infoBlock);
+            var created = await _repository.CreateAsync(infoBlock);
+            await _hubContext.Clients.All.SendAsync("InfoBlocksChanged");
+            return created;
         }
 
         public async Task<InfoBlock> UpdateAsync(string id, InfoBlockDto dto, string userRole)
         {
             CheckRole(userRole);
             ValidateDto(dto);
+            await CheckUniqueOrderIndex(dto.OrderIndex, excludeId: id);
 
             var infoBlock = await _repository.GetOneAsync(id);
             if (infoBlock == null)
@@ -78,9 +94,11 @@ namespace Logic.Logics
 
             _mapper.Map(dto, infoBlock);
 
-            return await _repository.UpdateAsync(infoBlock);
+            var updated = await _repository.UpdateAsync(infoBlock);
+            await _hubContext.Clients.All.SendAsync("InfoBlocksChanged");
+            return updated;
         }
-        
+
         public async Task DeleteAsync(string id, string userRole)
         {
             CheckRole(userRole);
@@ -92,6 +110,7 @@ namespace Logic.Logics
             }
 
             await _repository.DeleteByIdAsync(id);
+            await _hubContext.Clients.All.SendAsync("InfoBlocksChanged");
         }
     }
 }
