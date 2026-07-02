@@ -1,23 +1,86 @@
 .dal-container
-  padding: 20px
-  padding-top: 40px
+  padding: 32px 24px
+  max-width: 860px
+  margin: 0 auto
 
+  @media (max-width: 768px)
+    padding: 16px 12px
+
+.loading-text, .empty-text
+  color: #888888
+  font-size: 15px
+
+.error-text
+  color: #D32F2F
+  font-size: 15px
 
 .dal-section
-  margin-bottom: 32px
+  background-color: #ffffff
+  border-radius: 14px
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07)
+  padding: 24px 28px
+  margin-bottom: 24px
+
+  @media (max-width: 480px)
+    padding: 18px 16px
 
   h2
     color: #000000
-    font-size: 22px
+    font-size: 20px
+    font-weight: 700
     margin-top: 0
-    margin-bottom: 12px
-    border-bottom: 1px solid #e0e0e0 
-    padding-bottom: 8px
+    margin-bottom: 14px
+    padding-bottom: 10px
+    border-bottom: 1px solid #e0e0e0
+
+.song-number
+  font-weight: 700
+  margin-right: 4px
+
+.song-content
+  color: #444444
+  font-size: 15px
+  line-height: 1.7
+
+  p
+    color: #444444
+    font-size: 15px
+    line-height: 1.7
+    margin: 0 0 10px 0
+
+  h2
+    color: #000000
+    font-size: 18px
+    font-weight: 700
+    margin: 16px 0 8px 0
+    padding-bottom: 6px
+    border-bottom: 1px solid #e0e0e0
+
+  h3
+    color: #000000
+    font-size: 15px
+    font-weight: 700
+    margin: 14px 0 6px 0
+
+  ul, ol
+    padding-left: 0
+    margin: 6px 0 10px 4px
+    list-style-position: inside
+
+    li
+      color: #444444
+      font-size: 15px
+      line-height: 1.7
+      margin-bottom: 8px
+
+  b, strong
+    font-weight: 700
+
+  i, em
     font-style: italic
 
-.song-lyrics
-    color: #444444
-    font-size: 16px
-    line-height: 1.5 
-    white-space: pre-line 
-    font-style: italic 
+  u
+    text-decoration: underline
+
+  s
+    text-decoration: line-through
