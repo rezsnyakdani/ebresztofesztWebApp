@@ -28,20 +28,12 @@
       </a>
     }
 
-    <a routerLink="/info" fragment="koszonto" class="menu-item">
-      <span class="menu-text">Köszöntő</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
-
-    <a routerLink="/info" fragment="hasznos-infok" class="menu-item">
-      <span class="menu-text">Hasznos infók</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
-
-    <a routerLink="/info" fragment="hazirend" class="menu-item">
-      <span class="menu-text">Házirend</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
+    @for (block of infoBlocks; track block.id) {
+      <a class="menu-item" style="cursor: pointer;" (click)="navigateToInfo(block.id)">
+        <span class="menu-text">{{ block.title }}</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    }
 
     <a routerLink="/eloadas" class="menu-item">
         <span class="menu-text">Fő előadók</span>

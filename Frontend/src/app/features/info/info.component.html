@@ -11,7 +11,7 @@
     <p class="empty-text">Jelenleg nincs megjeleníthető információ.</p>
   } @else {
     @for (block of infoBlocks; track block.id) {
-      <section class="info-section">
+      <section class="info-section" [id]="block.id">
         <h2>{{ block.title }}</h2>
         <div class="info-content" [innerHTML]="block.safeContent"></div>
       </section>

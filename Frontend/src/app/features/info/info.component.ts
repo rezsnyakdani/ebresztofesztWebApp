@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { InfoService, InfoBlockGetDto } from '../../services/info.service';
@@ -24,7 +25,8 @@ export class InfoComponent implements OnInit, OnDestroy {
   constructor(
     private infoService: InfoService,
     private signalrService: SignalrService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -44,11 +46,23 @@ export class InfoComponent implements OnInit, OnDestroy {
           safeContent: this.sanitizer.bypassSecurityTrustHtml(b.content)
         }));
         this.isLoading = false;
+        this.scrollToFragment();
       },
       error: () => {
         this.errorMessage = 'Nem sikerült betölteni az információkat.';
         this.isLoading = false;
       }
     });
+  }
+
+  private scrollToFragment(): void {
+    const fragment = this.route.snapshot.fragment;
+    if (!fragment) return;
+    setTimeout(() => {
+      const el = document.getElementById(fragment);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
   }
 }
