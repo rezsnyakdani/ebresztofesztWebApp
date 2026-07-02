@@ -1,52 +1,83 @@
 .info-container
-  padding: 20px
-  padding-top: 40px
+  padding: 32px 24px
+  max-width: 860px
+  margin: 0 auto
 
-ul
-  padding-left: 20px
-  margin-top: 0
-  
-  li
-    color: #444444
-    font-size: 15px
-    line-height: 1.6
-    margin-bottom: 12px
-    text-align: justify
+  @media (max-width: 768px)
+    padding: 16px 12px
+
+.loading-text, .empty-text
+  color: #888888
+  font-size: 15px
+
+.error-text
+  color: #D32F2F
+  font-size: 15px
 
 .info-section
-  margin-bottom: 32px
+  background-color: #ffffff
+  border-radius: 14px
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07)
+  padding: 24px 28px
+  margin-bottom: 24px
+
+  @media (max-width: 480px)
+    padding: 18px 16px
 
   h2
     color: #D91668
-    font-size: 22px
+    font-size: 20px
+    font-weight: 700
     margin-top: 0
-    margin-bottom: 12px
-    border-bottom: 1px solid #e0e0e0 
-    padding-bottom: 8px
+    margin-bottom: 14px
+    padding-bottom: 10px
+    border-bottom: 2px solid #f3e0eb
+
+.info-content
+  color: #444444
+  font-size: 15px
+  line-height: 1.7
 
   p
-    color: #444444 
+    color: #444444
     font-size: 15px
-    line-height: 1.6
-    margin-bottom: 0
-    margin-top: 0
-    text-align: justify
+    line-height: 1.7
+    margin: 0 0 10px 0
 
-  .intro-text
-    margin-bottom: 20px
-
-.subsection
-  margin-top: 24px
-  padding-left: 14px
-  border-left: 3px solid #D91668
+  h2
+    color: #D91668
+    font-size: 18px
+    font-weight: 700
+    margin: 16px 0 8px 0
+    padding-bottom: 6px
+    border-bottom: 1px solid #f3e0eb
 
   h3
-    color: #000000
-    font-size: 18px
-    font-weight: 600
-    margin-top: 0
-    margin-bottom: 8px
+    color: #28164A
+    font-size: 15px
+    font-weight: 700
+    margin: 14px 0 6px 0
+    padding-left: 12px
+    border-left: 3px solid #D91668
 
-  p
-    font-size: 14px
-    color: #555555
+  ul, ol
+    padding-left: 20px
+    margin: 6px 0 10px 0
+
+    li
+      color: #444444
+      font-size: 15px
+      line-height: 1.7
+      margin-bottom: 10px
+
+  b, strong
+    font-weight: 700
+
+  i, em
+    font-style: italic
+
+  u
+    text-decoration: underline
+
+  s
+    text-decoration: line-through

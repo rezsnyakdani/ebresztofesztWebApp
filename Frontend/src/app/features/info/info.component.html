@@ -1,63 +1,21 @@
 <app-header></app-header>
 <div class="info-container">
 
-  <!-- 1. Szekció: Köszöntő -->
-  <section id="koszonto" class="info-section">
-    <h2>Köszöntő</h2>
-    <p>
-      Sok szeretettel köszöntünk Téged ezen a fesztiválon! Nagyon örülünk, hogy eljöttél! Ez a fesztivál nyolcadik alkalommal kerül megrendezésre, így mi, szervezők mindent elkövetünk majd azért, hogy jól érezd magad velünk, hogy szép, emlékezetes élményekkel, barátokkal gazdagodva, lelkileg feltöltődve térj majd vissza mindennapjaidba. Azért szerettük volna, hogy megvalósuljon ez az alkalom, mert azt látjuk, hogy rengeteg színes, érdekes és mozgalmas programmal szolgál a nyár, de szűkös azoknak a köre, amely kimondottan Neked való, ahol nemcsak megőrzik testi-lelki-szellemi értékeidet, hanem akár gazdagíthatják is. Azt szeretnénk, hogy elindulj az igényes kereszténység fel, és arra gondoltunk, hogy ez a fesztivál remek lehetőség erre. Bízunk benne, hogy kellő lendületet kapsz majd a továbbiakhoz. Merj és akarj igényes keresztény lenni! Köszönjük, hogy eljöttél!
-      <br><br>
-      A szervezők
-    </p>
-  </section>
+  @if (errorMessage) {
+    <p class="error-text">{{ errorMessage }}</p>
+  }
 
-  <!-- 2. Szekció: Hasznos infók -->
-  <section id="hasznos-infok" class="info-section">
-    <h2>Hasznos infók</h2>
-    <ul>
-      <li>Ha segítségre van szükséged, kérdésed merülne fel, bátran fordulj a szervezők, kiscsoport-vezetők valamelyikéhez. Örülünk, ha kérdezel!</li>
-      <li>Ha valamelyik társaddal a kiscsoportodon belül gond adódna, kérlek, ne próbáld egyedül megoldani, vond be a kiscsoport-vezetődet. Ha a kiscsoport vezetőddel kapcsolatban merül fel gond, szólj az egyik Szervezőnek, azért vannak Melletted! Megoldás mindig van, de tudnunk kell róla!</li>
-      <li>Kérlek, hogy tarts magad a program időpontjaihoz, szeretnénk, ha minden programon velünk lennél!</li>
-      <li>Kérlek, hogy ne cseréld el a kapott karszalagodat! Ha nem a barátoddal vagy barátnőddel kerülsz egy csapatba, később lesz lehetőségetek megbeszélni egymással az élményeiteket. Ha végképp módosítani szeretnéd a karszalagodat, kérlek, hogy keresd fel az egyik Szervezőt ezzel a kéréseddel, hogy megbeszélhessétek.</li>
-      <li>Ha gyónni szeretnél, bátran keresd meg az atyákat, vagy szólítsd le bármelyik arra járó papot. Örülni fognak neked! Ha éppen nem alkalmas neki, akkor elmondja, hogy mikor tudsz visszamenni hozzá.</li>
-    </ul>
-  </section>
+  @if (isLoading) {
+    <p class="loading-text">Betöltés...</p>
+  } @else if (infoBlocks.length === 0) {
+    <p class="empty-text">Jelenleg nincs megjeleníthető információ.</p>
+  } @else {
+    @for (block of infoBlocks; track block.id) {
+      <section class="info-section">
+        <h2>{{ block.title }}</h2>
+        <div class="info-content" [innerHTML]="block.safeContent"></div>
+      </section>
+    }
+  }
 
-  <!-- 3. Szekció: Házirend és alcímei -->
-  <section id="hazirend" class="info-section">
-    <h2>Házirend</h2>
-    
-    <div class="subsection">
-      <h3>Részvétel:</h3>
-      <ul>
-        <li>A rendezvény területére csak regisztrált személyek léphetnek a regisztrációs kapun keresztül. </li>
-        <li>A krónikus egészségügyi problémákat kötelező jelezni a regisztrációnál. </li>
-        <li>A Fesztivál időtartama alatt a rendezvény magánterületnek számít, ennek értelmében a helyszínre érkezőknek be kell tartaniuk a tábori szabályzatot és a programot. </li>
-        <li>A Találkozó helyszínét elhagyni csak a házigazdák engedélyével szabad.</li>
-      </ul>
-    </div>
-
-    <div class="subsection">
-      <h3>Tábori jelenlét:</h3>
-      <ul>
-        <li>A programon való aktív részvétel kötelező! A Fesztivál feszültségmentes hangulatához szükséges a civilizált öltözet, viselkedés és hangnem. A résztvevők közötti nézeteltéréseket a csoportvezetők, valamint nappal a házigazdák, éjszaka a rendfenntartók (zöld mellény) orvosolják. Minden résztvevő köteles a házigazdák és a rendfenntartók utasításait maradéktalanul megtartani.</li> 
-        <li>A résztvevők kötelesek vigyázni a felszerelésre és berendezésre. Rongálás, anyagi kár okozása esetén annak okozója köteles a kárt megtéríteni. </li>
-        <li>Rossz idő vagy vihar esetén a szervezők utasításait követjük. </li>
-        <li>A programokon való aktív részvételhez elengedhetetlen az éjszakai pihenés. 23.30-06.30 óra között csendidő van. Tilos az éjszakai hangoskodás, rendzavarás. A telefonokat és minden elektromos készüléket csendidőben elnémítjuk, vagy kikapcsoljuk, de semmiképp nem kezdeményezünk telefonhívást, nem használjuk a laptopunkat, mert társaink pihenését nincs jogunk megzavarni. Telefonálásra, beszélgetésre ez idő alatt a „Chat szobában” van lehetőség. Az éjszakát minden táborozó kötelezően a saját sátrában tölti.</li> 
-        <li>Elcsendesedés után a sátor elhagyása csak jól megindokolt esetekben lehetséges.</li>
-      </ul>
-    </div>
-
-    <div class="subsection">
-      <h3>Tisztaság, higiénia, egészség:</h3>
-      <ul>
-        <li>Étkezni csak a kijelölt helyen megengedett. A résztvevőket kérjük az ivóvíz és mosdóvíz takarékos használatára. A wc-t és zuhanyzót mindig tisztán hagyjuk magunk után. A Fesztivál színhelyének tisztántartása mindenkinek szívügye kell legyen. A szemetet az előre megjelölt helyeken tároljuk, valamint a sátrunkat és környékét igyekezzünk tisztán tartani. A rendezvény helyszínén kizárólag a WC-k használata engedélyezett, a természet nem ezt a célt szolgálja. </li>
-        <li>Betegség, rosszullét, csípések, leégések, stb. esetén azonnal jelentkezzünk a tábori orvosnál (asszisztensnél), vagy a szervezőknél/csoportvezetőknél. </li>
-        <li>A Fesztivál teljes ideje alatt tilos az alkohol fogyasztása. Az ilyen szerek elkobzásra kerülnek, és fogyasztója kizárásra kerül.</li>
-        <li>Szigorúan tilos a dohányzás. Ellenkező esetben kizárjuk a Találkozóról! Dohányozni a felnőtteknek is csak az erre kijelölt helyen lehetséges.</li>
-        <li>A Találkozó teljes ideje alatt tilos a drogok, tudatmódosító szerek fogyasztása. Ezek használatát a rendőrségen jelentjük és a felhasználóknak vállalniuk kell a teljes felelősséget!</li> 
-        <li>A szabályok be nem tartása figyelmeztetést von maga után, ismétlődés esetén a táborból való kizárást, és annak elhagyását eredményezi. Ez esetben a részvételi díjat nem térítjük meg.</li>
-      </ul>
-    </div>
-  </section>
 </div>
