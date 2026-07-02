@@ -11,6 +11,7 @@ export class SignalrService {
   public profilesChanged$ = new Subject<void>();
   public lecturesChanged$ = new Subject<void>();
   public infoBlocksChanged$ = new Subject<void>();
+  public songsChanged$ = new Subject<void>();
 
   startConnection(): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -45,6 +46,11 @@ export class SignalrService {
     this.hubConnection.on('InfoBlocksChanged', () => {
       console.log('SignalR: InfoBlocksChanged esemény érkezett.');
       this.infoBlocksChanged$.next();
+    });
+
+    this.hubConnection.on('SongsChanged', () => {
+      console.log('SignalR: SongsChanged esemény érkezett.');
+      this.songsChanged$.next();
     });
   }
 

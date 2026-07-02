@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Data.Repositories;
 using Entities.Dtos;
 using Entities.Models;
 using Logic.Helpers;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace Logic.Logics
     {
         private readonly IRepository<Song> _repository;
         private readonly IMapper _mapper;
+        private readonly IHubContext<AppHub> _hubContext;
 
-        public SongLogic(IRepository<Song> repository, IMapper mapper)
+        public SongLogic(IRepository<Song> repository, IMapper mapper, IHubContext<AppHub> hubContext)
         {
             _repository = repository;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         private void CheckOrganizerRole(string userRole)
@@ -56,7 +59,9 @@ namespace Logic.Logics
             ValidateSongData(dto.Title, dto.Content);
 
             var song = _mapper.Map<Song>(dto);
-            return await _repository.CreateAsync(song);
+            var created = await _repository.CreateAsync(song);
+            await _hubContext.Clients.All.SendAsync("SongsChanged");
+            return created;
         }
 
         public async Task<Song> UpdateAsync(string id, SongUpdateDto dto, string userRole)
@@ -68,7 +73,9 @@ namespace Logic.Logics
             if (song == null) throw new NotFoundException("A dal nem található.");
 
             _mapper.Map(dto, song);
-            return await _repository.UpdateAsync(song);
+            var updated = await _repository.UpdateAsync(song);
+            await _hubContext.Clients.All.SendAsync("SongsChanged");
+            return updated;
         }
 
         public async Task DeleteAsync(string id, string userRole)
@@ -78,6 +85,7 @@ namespace Logic.Logics
             if (song == null) throw new NotFoundException("A dal nem található.");
 
             await _repository.DeleteByIdAsync(id);
+            await _hubContext.Clients.All.SendAsync("SongsChanged");
         }
 
         public async Task<List<Song>> CreateManyAsync(List<SongCreateDto> dtos, string userRole)
@@ -93,6 +101,7 @@ namespace Logic.Logics
             }
 
             var createdSongs = await _repository.CreateManyAsync(songsToCreate);
+            await _hubContext.Clients.All.SendAsync("SongsChanged");
             return (List<Song>)createdSongs;
         }
     }
