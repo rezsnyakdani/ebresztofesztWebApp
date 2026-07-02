@@ -1,2 +1,125 @@
 <app-admin-nabar></app-admin-nabar>
-<p>admin-dal works!</p>
+
+<div class="admin-dal-container">
+  <h1 class="page-title">Dalok</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="dal-table">
+        <thead>
+          <tr>
+            <th>Cím</th>
+            <th>Tartalom</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (song of songs; track song.id; let i = $index) {
+            <tr [class.row-alt]="i % 2 === 1">
+              <td class="title-cell">{{ song.title }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ getContentPreview(song.content) }}</div></td>
+              <td>
+                <button type="button" class="btn-edit" (click)="startEdit(song)">Szerkesztés</button>
+              </td>
+              <td>
+                <button type="button" class="btn-delete" (click)="deleteSong(song)">Törlés</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <h2 class="section-title" #createFormSection>Dal létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveSong()" novalidate>
+    <div class="input-group">
+      <label for="title">Cím</label>
+      <input type="text" id="title" name="title" [(ngModel)]="newSong.title" placeholder="Pl. Áldjad ember">
+    </div>
+
+    <div class="input-group">
+      <label>Dalszöveg</label>
+      <div class="editor-toolbar">
+        <button type="button" class="toolbar-btn" title="Félkövér" (click)="execFormat('bold')"><b>B</b></button>
+        <button type="button" class="toolbar-btn" title="Dőlt" (click)="execFormat('italic')"><i>I</i></button>
+        <button type="button" class="toolbar-btn" title="Aláhúzott" (click)="execFormat('underline')"><u>U</u></button>
+        <button type="button" class="toolbar-btn" title="Áthúzott" (click)="execFormat('strikeThrough')"><s>S</s></button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Nagyobb fejléc (H2)" (click)="execFormat('formatBlock', 'h2')">H2</button>
+        <button type="button" class="toolbar-btn" title="Kisebb fejléc (H3)" (click)="execFormat('formatBlock', 'h3')">H3</button>
+        <button type="button" class="toolbar-btn" title="Bekezdés" (click)="execFormat('formatBlock', 'p')">P</button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Rendezetlen lista" (click)="execFormat('insertUnorderedList')">• Lista</button>
+        <button type="button" class="toolbar-btn" title="Rendezett lista" (click)="execFormat('insertOrderedList')">1. Lista</button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Balra igazítás" (click)="execFormat('justifyLeft')">⬅</button>
+        <button type="button" class="toolbar-btn" title="Középre igazítás" (click)="execFormat('justifyCenter')">↔</button>
+        <button type="button" class="toolbar-btn" title="Jobbra igazítás" (click)="execFormat('justifyRight')">➡</button>
+        <button type="button" class="toolbar-btn" title="Sorkizárás" (click)="execFormat('justifyFull')">⇔</button>
+      </div>
+      <div
+        #editorArea
+        class="editor-area"
+        contenteditable="true"
+        (input)="onEditorInput()"
+        (blur)="syncEditorContent()"
+        [attr.data-placeholder]="'Ide kerül a dalszöveg...'">
+      </div>
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingId ? 'Szerkesztés mentése' : 'Új dal mentése') }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelSong()">Mégse</button>
+    </div>
+  </form>
+
+  <h2 class="section-title" #bulkFormSection>Tömeges létrehozás JSON formátumban</h2>
+
+  @if (bulkErrorMessage) {
+    <div class="alert error-message">{{ bulkErrorMessage }}</div>
+  }
+
+  @if (bulkSuccessMessage) {
+    <div class="alert success-message">{{ bulkSuccessMessage }}</div>
+  }
+
+  <div class="create-form">
+    <div class="input-group">
+      <button type="button" class="btn-copy-sample" (click)="fillWithSample()">
+        Minta JSON beillesztése
+      </button>
+      <textarea
+        id="bulkJson"
+        name="bulkJson"
+        rows="10"
+        [(ngModel)]="bulkJson"
+        placeholder="Ide illeszd be vagy gépeld be a JSON tömböt..."></textarea>
+    </div>
+
+    <div class="form-buttons">
+      <button type="button" class="btn-save" [disabled]="isBulkSaving" (click)="createManySongs()">
+        {{ isBulkSaving ? 'Mentés...' : 'Tömeges létrehozás' }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelBulk()">Mégse</button>
+    </div>
+  </div>
+</div>
