@@ -18,6 +18,41 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
   private pendingScroll: 'participants' | 'createForm' | 'bulkForm' | 'top' | null = null;
   private signalrSub = new Subscription();
   workshops: WorkshopGetDto[] = [];
+
+  sortColumn: string | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
+
+  get sortedWorkshops(): WorkshopGetDto[] {
+    if (!this.sortColumn) return this.workshops;
+    const col = this.sortColumn;
+    return [...this.workshops].sort((a, b) => {
+      let va: unknown;
+      let vb: unknown;
+      if (col === 'title' || col === 'lecturer') {
+        va = (a as unknown as Record<string, unknown>)[col];
+        vb = (b as unknown as Record<string, unknown>)[col];
+      } else {
+        va = a.sessions[0] ? (a.sessions[0] as unknown as Record<string, unknown>)[col] : '';
+        vb = b.sessions[0] ? (b.sessions[0] as unknown as Record<string, unknown>)[col] : '';
+      }
+      const cmp = String(va ?? '').localeCompare(String(vb ?? ''), 'hu', { numeric: true });
+      return this.sortDir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  toggleSort(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDir = 'asc';
+    }
+  }
+
+  sortIcon(column: string): string {
+    if (this.sortColumn !== column) return '↕';
+    return this.sortDir === 'asc' ? '↑' : '↓';
+  }
   isLoading = false;
   errorMessage = '';
 

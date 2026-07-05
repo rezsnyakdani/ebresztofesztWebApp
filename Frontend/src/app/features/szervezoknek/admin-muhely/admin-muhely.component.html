@@ -14,28 +14,30 @@
     <table class="muhely-table">
       <thead>
         <tr>
-          <th>Cím</th>
-          <th>Előadó</th>
+          <th class="col-serial">#</th>
+          <th class="col-sortable" (click)="toggleSort('title')">Cím <span class="sort-icon">{{ sortIcon('title') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('lecturer')">Előadó <span class="sort-icon">{{ sortIcon('lecturer') }}</span></th>
           <th>Leírás</th>
           <th>Nap</th>
-          <th>Kezdés</th>
-          <th>Befejezés</th>
+          <th class="col-sortable" (click)="toggleSort('startTime')">Kezdés <span class="sort-icon">{{ sortIcon('startTime') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('endTime')">Befejezés <span class="sort-icon">{{ sortIcon('endTime') }}</span></th>
           <th>Helyszín</th>
-          <th>Kapacitás</th>
-          <th>Min. életkor</th>
-          <th>Max. életkor</th>
-          <th>Célzott nem</th>
+          <th class="col-sortable" (click)="toggleSort('capacity')">Kapacitás <span class="sort-icon">{{ sortIcon('capacity') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('minAge')">Min. életkor <span class="sort-icon">{{ sortIcon('minAge') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('maxAge')">Max. életkor <span class="sort-icon">{{ sortIcon('maxAge') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('targetGender')">Célzott nem <span class="sort-icon">{{ sortIcon('targetGender') }}</span></th>
           <th>Résztvevők</th>
           <th></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        @for (workshop of workshops; track workshop.id; let wi = $index) {
+        @for (workshop of sortedWorkshops; track workshop.id; let wi = $index) {
           @if (workshop.sessions.length > 0) {
             @for (session of workshop.sessions; track session.id; let i = $index) {
               <tr [class.row-alt]="wi % 2 === 1">
                 @if (i === 0) {
+                  <td class="col-serial" [attr.rowspan]="workshop.sessions.length">{{ wi + 1 }}</td>
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.title }}</td>
                   <td [attr.rowspan]="workshop.sessions.length">{{ workshop.lecturer }}</td>
                   <td [attr.rowspan]="workshop.sessions.length" class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
@@ -44,7 +46,7 @@
                 <td>{{ session.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
                 <td>{{ session.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>
                 <td>{{ session.place }}</td>
-                <td>{{session.participants.length}}/{{ session.capacity }}</td>
+                <td>{{ session.participants.length }}/{{ session.capacity }}</td>
                 <td>{{ session.minAge ?? '-' }}</td>
                 <td>{{ session.maxAge ?? '-' }}</td>
                 <td>{{ session.targetGender ?? '-' }}</td>
@@ -63,6 +65,7 @@
             }
           } @else {
             <tr [class.row-alt]="wi % 2 === 1">
+              <td class="col-serial">{{ wi + 1 }}</td>
               <td>{{ workshop.title }}</td>
               <td>{{ workshop.lecturer }}</td>
               <td class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
