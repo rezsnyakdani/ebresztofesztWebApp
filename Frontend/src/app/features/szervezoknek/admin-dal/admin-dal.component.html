@@ -14,15 +14,17 @@
       <table class="dal-table">
         <thead>
           <tr>
-            <th>Cím</th>
+            <th class="col-serial">#</th>
+            <th class="col-sortable" (click)="toggleSort('title')">Cím <span class="sort-icon">{{ sortIcon('title') }}</span></th>
             <th>Tartalom</th>
             <th></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          @for (song of songs; track song.id; let i = $index) {
+          @for (song of sortedSongs; track song.id; let i = $index) {
             <tr [class.row-alt]="i % 2 === 1">
+              <td class="col-serial">{{ i + 1 }}</td>
               <td class="title-cell">{{ song.title }}</td>
               <td class="desc-cell"><div class="desc-text">{{ getContentPreview(song.content) }}</div></td>
               <td>
