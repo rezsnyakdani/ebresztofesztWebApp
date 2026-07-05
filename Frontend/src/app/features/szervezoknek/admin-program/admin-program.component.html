@@ -14,8 +14,9 @@
       <table class="program-table">
         <thead>
           <tr>
-            <th>Cím</th>
-            <th>Kezdés</th>
+            <th class="col-serial">#</th>
+            <th class="col-sortable" (click)="toggleSort('title')">Cím <span class="sort-icon">{{ sortIcon('title') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('startTime')">Kezdés <span class="sort-icon">{{ sortIcon('startTime') }}</span></th>
             <th>Befejezés</th>
             <th>Helyszín</th>
             <th></th>
@@ -23,8 +24,9 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of programItems; track item.id; let i = $index) {
+          @for (item of sortedItems; track item.id; let i = $index) {
             <tr [class.row-alt]="i % 2 === 1">
+              <td class="col-serial">{{ i + 1 }}</td>
               <td class="title-cell">{{ item.title }}</td>
               <td class="time-cell">{{ formatDateTime(item.startTime) }}</td>
               <td class="time-cell">{{ formatDateTime(item.endTime) }}</td>
