@@ -1,20 +1,39 @@
+<app-header></app-header>
 <div class="menu-container">
   
+  @if (logoutMessage) {
+    <div class="alert success-message">
+      <span class="material-icons">check_circle_outline</span>
+      {{ logoutMessage }}
+    </div>
+  }
+
+  
+
   <div class="menu-list">
-    <a routerLink="/info" fragment="koszonto" class="menu-item">
-      <span class="menu-text">Köszöntő</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
 
-    <a routerLink="/info" fragment="hasznos-infok" class="menu-item">
-      <span class="menu-text">Hasznos infók</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
+    @if (authService.isLoggedIn$ | async) {
+      <div class="menu-list">
+        <a (click)="onLogout($event)" class="menu-item logout-item" style="cursor: pointer;">
+          <span class="material-icons menu-icon">logout</span>
+          <span class="menu-text" style="font-weight: bold;">Kijelentkezés</span>
+          <span class="material-icons chevron">chevron_right</span>
+        </a>
+      </div>
+    } @else {
+      <a routerLink="/login" class="menu-item">
+        <span class="material-icons menu-icon">login</span>
+        <span class="menu-text" style="font-weight: bold;">Bejelentkezés</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    }
 
-    <a routerLink="/info" fragment="hazirend" class="menu-item">
-      <span class="menu-text">Házirend</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
+    @for (block of infoBlocks; track block.id) {
+      <a class="menu-item" style="cursor: pointer;" (click)="navigateToInfo(block.id)">
+        <span class="menu-text">{{ block.title }}</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    }
 
     <a routerLink="/eloadas" class="menu-item">
         <span class="menu-text">Fő előadók</span>
@@ -41,10 +60,13 @@
       <span class="material-icons chevron">chevron_right</span>
     </a>
 
-    <a routerLink="/login" class="menu-item logout-item">
-      <span class="material-icons menu-icon">logout</span>
-      <span class="menu-text">Kijelentkezés</span>
-      <span class="material-icons chevron">chevron_right</span>
-    </a>
+    @if (authService.isAdmin()) {
+      <a routerLink="/admin-profil" class="menu-item">
+        <span class="menu-text szervezoknek">Szerkesztő felület szervezőknek</span>
+        <span class="material-icons chevron">chevron_right</span>
+      </a>
+    }
+
+    
   </div>
 </div>

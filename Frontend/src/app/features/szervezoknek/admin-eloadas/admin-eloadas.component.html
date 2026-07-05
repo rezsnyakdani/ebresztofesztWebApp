@@ -1,0 +1,139 @@
+<app-admin-nabar></app-admin-nabar>
+
+<div class="admin-eloadas-container">
+  <h1 class="page-title">Előadások</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="eloadas-table">
+        <thead>
+          <tr>
+            <th class="col-serial">#</th>
+            <th class="col-sortable" (click)="toggleSort('lecturerName')">Előadó neve <span class="sort-icon">{{ sortIcon('lecturerName') }}</span></th>
+            <th>Leírás</th>
+            <th>Nap</th>
+            <th class="col-sortable" (click)="toggleSort('startTime')">Kezdés <span class="sort-icon">{{ sortIcon('startTime') }}</span></th>
+            <th>Befejezés</th>
+            <th>Kép</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (lecture of sortedLectures; track lecture.id; let i = $index) {
+            <tr [class.row-alt]="i % 2 === 1">
+              <td class="col-serial">{{ i + 1 }}</td>
+              <td>{{ lecture.lecturerName }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ lecture.description }}</div></td>
+              <td>{{ getNapNev(lecture.startTime) }}</td>
+              <td>{{ lecture.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+              <td>{{ lecture.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+              <td class="image-cell">
+                @if (getImageUrl(lecture.imagePath)) {
+                  <img [src]="getImageUrl(lecture.imagePath)!" class="lecture-thumb" alt="Előadó képe">
+                } @else {
+                  <span class="no-image">–</span>
+                }
+              </td>
+              <td>
+                <button type="button" class="btn-edit" (click)="startEdit(lecture)">Szerkesztés</button>
+              </td>
+              <td>
+                <button type="button" class="btn-delete" (click)="deleteLecture(lecture)">Törlés</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <h2 class="section-title" #createFormSection>Előadás létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveLecture()">
+    <div class="input-group">
+      <label for="lecturerName">Előadó neve</label>
+      <input type="text" id="lecturerName" name="lecturerName" [(ngModel)]="newLecture.lecturerName" placeholder="Pl. Kovács Anna">
+    </div>
+
+    <div class="input-group">
+      <label for="description">Leírás</label>
+      <textarea id="description" name="description" rows="4" [(ngModel)]="newLecture.description" placeholder="Az előadás rövid leírása..."></textarea>
+    </div>
+
+    <div class="input-group">
+      <label for="startTime">Kezdés</label>
+      <input type="datetime-local" id="startTime" name="startTime" [(ngModel)]="newLecture.startTime">
+    </div>
+
+    <div class="input-group">
+      <label for="endTime">Befejezés</label>
+      <input type="datetime-local" id="endTime" name="endTime" [(ngModel)]="newLecture.endTime">
+    </div>
+
+    <div class="input-group">
+      <label for="imageFile">Kép feltöltése</label>
+      @if (editingLectureId && currentImageUrl) {
+        <div class="current-image-preview">
+          <p class="current-image-label">Jelenlegi kép:</p>
+          <img [src]="currentImageUrl" class="preview-img" alt="Jelenlegi kép">
+          <p class="current-image-hint">Új kép feltöltésével felülírható.</p>
+        </div>
+      }
+      <input #fileInput type="file" id="imageFile" name="imageFile" accept="image/*" (change)="onFileChange($event)">
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingLectureId ? 'Szerkesztés mentése' : 'Új előadás mentése') }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelLecture()">Mégse</button>
+    </div>
+  </form>
+
+  <h2 class="section-title" #bulkFormSection>Tömeges létrehozás JSON formátumban</h2>
+
+  @if (bulkErrorMessage) {
+    <div class="alert error-message">{{ bulkErrorMessage }}</div>
+  }
+
+  @if (bulkSuccessMessage) {
+    <div class="alert success-message">{{ bulkSuccessMessage }}</div>
+  }
+
+  <div class="create-form">
+    <div class="input-group">
+      <button type="button" class="btn-copy-sample" (click)="fillWithSample()">
+        Minta JSON beillesztése
+      </button>
+      <textarea
+        id="bulkJson"
+        name="bulkJson"
+        rows="10"
+        [(ngModel)]="bulkJson"
+        placeholder="Ide illeszd be vagy gépeld be a JSON tömböt..."></textarea>
+    </div>
+
+    <div class="form-buttons">
+      <button type="button" class="btn-save" [disabled]="isBulkSaving" (click)="createManyLectures()">
+        {{ isBulkSaving ? 'Mentés...' : 'Tömeges létrehozás' }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelBulk()">Mégse</button>
+    </div>
+  </div>
+</div>
+

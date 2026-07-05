@@ -1,0 +1,101 @@
+<app-admin-nabar></app-admin-nabar>
+
+<div class="admin-info-container">
+  <h1 class="page-title">Információs blokkok</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th>Sorrend</th>
+            <th>Cím</th>
+            <th>Tartalom</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (block of infoBlocks; track block.id; let i = $index) {
+            <tr [class.row-alt]="i % 2 === 1">
+              <td class="order-cell">{{ block.orderIndex }}</td>
+              <td class="title-cell">{{ block.title }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ getContentPreview(block.content) }}</div></td>
+              <td>
+                <button type="button" class="btn-edit" (click)="startEdit(block)">Szerkesztés</button>
+              </td>
+              <td>
+                <button type="button" class="btn-delete" (click)="deleteInfo(block)">Törlés</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <h2 class="section-title" #createFormSection>Információs blokk létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveInfo()" novalidate>
+    <div class="input-group">
+      <label for="title">Cím</label>
+      <input type="text" id="title" name="title" [(ngModel)]="newInfo.title" placeholder="Pl. Házirend">
+    </div>
+
+    <div class="input-group">
+      <label for="orderIndex">Sorrend (kisebb szám = előrébb kerül)</label>
+      <input type="number" id="orderIndex" name="orderIndex" [(ngModel)]="newInfo.orderIndex">
+    </div>
+
+    <div class="input-group">
+      <label>Tartalom</label>
+      <div class="editor-toolbar">
+        <button type="button" class="toolbar-btn" title="Félkövér" (click)="execFormat('bold')"><b>B</b></button>
+        <button type="button" class="toolbar-btn" title="Dőlt" (click)="execFormat('italic')"><i>I</i></button>
+        <button type="button" class="toolbar-btn" title="Aláhúzott" (click)="execFormat('underline')"><u>U</u></button>
+        <button type="button" class="toolbar-btn" title="Áthúzott" (click)="execFormat('strikeThrough')"><s>S</s></button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Nagyobb fejléc (H2)" (click)="execFormat('formatBlock', 'h2')">H2</button>
+        <button type="button" class="toolbar-btn" title="Kisebb fejléc (H3)" (click)="execFormat('formatBlock', 'h3')">H3</button>
+        <button type="button" class="toolbar-btn" title="Bekezdés" (click)="execFormat('formatBlock', 'p')">P</button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Rendezetlen lista" (click)="execFormat('insertUnorderedList')">• Lista</button>
+        <button type="button" class="toolbar-btn" title="Rendezett lista" (click)="execFormat('insertOrderedList')">1. Lista</button>
+        <div class="toolbar-separator"></div>
+        <button type="button" class="toolbar-btn" title="Balra igazítás" (click)="execFormat('justifyLeft')">⬅</button>
+        <button type="button" class="toolbar-btn" title="Középre igazítás" (click)="execFormat('justifyCenter')">↔</button>
+        <button type="button" class="toolbar-btn" title="Jobbra igazítás" (click)="execFormat('justifyRight')">➡</button>
+        <button type="button" class="toolbar-btn" title="Sorkizárás" (click)="execFormat('justifyFull')">⇔</button>
+      </div>
+      <div
+        #editorArea
+        class="editor-area"
+        contenteditable="true"
+        (input)="onEditorInput()"
+        (blur)="syncEditorContent()"
+        [attr.data-placeholder]="'Ide kerül a blokk tartalma...'">
+      </div>
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingId ? 'Szerkesztés mentése' : 'Új blokk mentése') }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelInfo()">Mégse</button>
+    </div>
+  </form>
+</div>

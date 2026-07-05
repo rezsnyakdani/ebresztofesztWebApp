@@ -1,0 +1,270 @@
+<app-admin-nabar></app-admin-nabar>
+
+<div class="admin-muhely-container">
+  <h1 class="page-title">Műhelyek</h1>
+
+  @if (errorMessage) {
+    <div class="alert error-message">{{ errorMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <p>Betöltés...</p>
+  } @else {
+    <div class="table-wrapper">
+    <table class="muhely-table">
+      <thead>
+        <tr>
+          <th class="col-serial">#</th>
+          <th class="col-sortable" (click)="toggleSort('title')">Cím <span class="sort-icon">{{ sortIcon('title') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('lecturer')">Előadó <span class="sort-icon">{{ sortIcon('lecturer') }}</span></th>
+          <th>Leírás</th>
+          <th>Nap</th>
+          <th class="col-sortable" (click)="toggleSort('startTime')">Kezdés <span class="sort-icon">{{ sortIcon('startTime') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('endTime')">Befejezés <span class="sort-icon">{{ sortIcon('endTime') }}</span></th>
+          <th>Helyszín</th>
+          <th class="col-sortable" (click)="toggleSort('capacity')">Kapacitás <span class="sort-icon">{{ sortIcon('capacity') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('minAge')">Min. életkor <span class="sort-icon">{{ sortIcon('minAge') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('maxAge')">Max. életkor <span class="sort-icon">{{ sortIcon('maxAge') }}</span></th>
+          <th class="col-sortable" (click)="toggleSort('targetGender')">Célzott nem <span class="sort-icon">{{ sortIcon('targetGender') }}</span></th>
+          <th>Jel. kezdete</th>
+          <th>Jel. vége</th>
+          <th>Résztvevők</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (workshop of sortedWorkshops; track workshop.id; let wi = $index) {
+          @if (workshop.sessions.length > 0) {
+            @for (session of workshop.sessions; track session.id; let i = $index) {
+              <tr [class.row-alt]="wi % 2 === 1">
+                @if (i === 0) {
+                  <td class="col-serial" [attr.rowspan]="workshop.sessions.length">{{ wi + 1 }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.title }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length">{{ workshop.lecturer }}</td>
+                  <td [attr.rowspan]="workshop.sessions.length" class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
+                }
+                <td>{{ getNapNev(session.startTime) }}</td>
+                <td>{{ session.startTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+                <td>{{ session.endTime | date:'yyyy.MM.dd. HH:mm' }}</td>
+                <td>{{ session.place }}</td>
+                <td>{{ session.participants.length }}/{{ session.capacity }}</td>
+                <td>{{ session.minAge ?? '-' }}</td>
+                <td>{{ session.maxAge ?? '-' }}</td>
+                <td>{{ session.targetGender ?? '-' }}</td>
+                <td>{{ session.startRegistration ? (session.startRegistration | date:'yyyy.MM.dd. HH:mm') : '-' }}</td>
+                <td>{{ session.endRegistration ? (session.endRegistration | date:'yyyy.MM.dd. HH:mm') : '-' }}</td>
+                <td>
+                  <button type="button" class="btn-participants" (click)="viewParticipants(workshop, session)">Résztvevők</button>
+                </td>
+                @if (i === 0) {
+                  <td [attr.rowspan]="workshop.sessions.length">
+                    <button type="button" class="btn-edit" (click)="startEdit(workshop)">Szerkesztés</button>
+                  </td>
+                  <td [attr.rowspan]="workshop.sessions.length">
+                    <button type="button" class="btn-delete" (click)="deleteWorkshop(workshop)">Törlés</button>
+                  </td>
+                }
+              </tr>
+            }
+          } @else {
+            <tr [class.row-alt]="wi % 2 === 1">
+              <td class="col-serial">{{ wi + 1 }}</td>
+              <td>{{ workshop.title }}</td>
+              <td>{{ workshop.lecturer }}</td>
+              <td class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
+              <td colspan="10">Nincs hozzá rendelt alkalom</td>
+              <td></td>
+              <td>
+                <button type="button" class="btn-edit" (click)="startEdit(workshop)">Szerkesztés</button>
+              </td>
+              <td>
+                <button type="button" class="btn-delete" (click)="deleteWorkshop(workshop)">Törlés</button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+    </div>
+  }
+
+  @if (selectedSessionTitle) {
+    <div class="participants-panel" #participantsPanel>
+      <h2 class="section-title">{{ selectedSessionTitle }}</h2>
+
+      @if (selectedSessionParticipants.length > 0) {
+        <ul class="participants-list">
+          @for (participant of selectedSessionParticipants; track participant.registrationId) {
+            <li>
+              <span>{{ participant.name }}</span>
+              <button type="button" class="btn-delete-registration" (click)="deleteParticipant(participant)">Jelentkezés törlése</button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>Nincs résztvevő.</p>
+      }
+
+      @if (selectedSession && selectedSessionParticipants.length < selectedSession.capacity) {
+        <div class="add-participant-form">
+          @if (addParticipantError) {
+            <div class="error-message">{{ addParticipantError }}</div>
+          }
+          @if (addParticipantSuccess) {
+            <div class="success-message">{{ addParticipantSuccess }}</div>
+          }
+          <div class="input-group">
+            <label for="addParticipantSelect">Résztvevő hozzáadása</label>
+            <select id="addParticipantSelect" name="addParticipantSelect" [(ngModel)]="selectedProfileId">
+              <option value="">-- Válassz résztvevőt --</option>
+              @for (profile of allProfiles; track profile.id) {
+                <option [value]="profile.id">{{ profile.name }} ({{ getAge(profile.birthDate) }} év)</option>
+              }
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="button" class="btn-save" (click)="addParticipant()">Résztvevő hozzáadása</button>
+            <button type="button" class="btn-cancel" (click)="cancelAddParticipant()">Mégse</button>
+          </div>
+        </div>
+      }
+
+      <button type="button" class="btn-cancel close-participants-btn" (click)="closeParticipants()">Bezárás</button>
+    </div>
+  }
+
+  <h2 class="section-title" #createFormSection>Műhely létrehozása, szerkesztése</h2>
+
+  @if (createErrorMessage) {
+    <div class="alert error-message">{{ createErrorMessage }}</div>
+  }
+
+  @if (createSuccessMessage) {
+    <div class="alert success-message">{{ createSuccessMessage }}</div>
+  }
+
+  <form class="create-form" (ngSubmit)="saveWorkshop()">
+    <div class="input-group">
+      <label for="title">Cím</label>
+      <input type="text" id="title" name="title" [(ngModel)]="newWorkshop.title" placeholder="Pl. Hogyan legyek csónak?">
+    </div>
+
+    <div class="input-group">
+      <label for="lecturer">Előadó</label>
+      <input type="text" id="lecturer" name="lecturer" [(ngModel)]="newWorkshop.lecturer" placeholder="Pl. Kovács Anna">
+    </div>
+
+    <div class="input-group">
+      <label for="description">Leírás</label>
+      <textarea id="description" name="description" rows="4" [(ngModel)]="newWorkshop.description" placeholder="Pl. Egy izgalmas műhely..."></textarea>
+    </div>
+
+    @for (session of newWorkshop.sessions; track $index; let i = $index) {
+      <div class="session-block">
+        <h3 class="session-title">{{ i + 1 }}. műhely alkalom</h3>
+
+        <div class="input-group">
+          <label for="startTime-{{i}}">Kezdés</label>
+          <input type="datetime-local" id="startTime-{{i}}" name="startTime-{{i}}" [(ngModel)]="session.startTime">
+        </div>
+
+        <div class="input-group">
+          <label for="endTime-{{i}}">Befejezés</label>
+          <input type="datetime-local" id="endTime-{{i}}" name="endTime-{{i}}" [(ngModel)]="session.endTime">
+        </div>
+
+        <div class="input-group">
+          <label for="place-{{i}}">Helyszín</label>
+          <input type="text" id="place-{{i}}" name="place-{{i}}" [(ngModel)]="session.place" placeholder="Pl. 1-es műhelysátor">
+        </div>
+
+        <div class="input-group">
+          <label for="capacity-{{i}}">Kapacitás</label>
+          <input type="number" id="capacity-{{i}}" name="capacity-{{i}}" [(ngModel)]="session.capacity">
+        </div>
+
+        <div class="input-group">
+          <label for="minAge-{{i}}">Min. életkor</label>
+          <input type="number" id="minAge-{{i}}" name="minAge-{{i}}" [(ngModel)]="session.minAge">
+        </div>
+
+        <div class="input-group">
+          <label for="maxAge-{{i}}">Max. életkor</label>
+          <input type="number" id="maxAge-{{i}}" name="maxAge-{{i}}" [(ngModel)]="session.maxAge">
+        </div>
+
+        <div class="input-group">
+          <label for="targetGender-{{i}}">Célzott nem</label>
+          <input type="text" id="targetGender-{{i}}" name="targetGender-{{i}}" [(ngModel)]="session.targetGender" placeholder="Pl. Férfi, Nő, vagy hagyd üresen">
+        </div>
+
+        <div class="input-group">
+          <label for="startRegistration-{{i}}">Jelentkezés kezdete (nem kötelező)</label>
+          <input type="datetime-local" id="startRegistration-{{i}}" name="startRegistration-{{i}}" [(ngModel)]="session.startRegistration">
+        </div>
+
+        <div class="input-group">
+          <label for="endRegistration-{{i}}">Jelentkezés vége (nem kötelező)</label>
+          <input type="datetime-local" id="endRegistration-{{i}}" name="endRegistration-{{i}}" [(ngModel)]="session.endRegistration">
+        </div>
+
+        <button type="button" class="btn-remove-session" (click)="removeSession(i)">
+          Műhely alkalom elvetése
+        </button>
+      </div>
+    }
+
+    <button type="button" class="btn-add-session" (click)="addSession()">
+      Plusz műhely alkalom hozzáadása
+    </button>
+
+    <div class="form-buttons">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        {{ isSaving ? 'Mentés...' : (editingWorkshopId ? 'Szerkesztés mentése' : 'Új műhely mentése') }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelWorkshop()">
+        Mégse
+      </button>
+    </div>
+  </form>
+
+  <h2 class="section-title" #bulkFormSection>Tömeges létrehozás JSON formátumban</h2>
+
+  @if (bulkErrorMessage) {
+    <div class="alert error-message">{{ bulkErrorMessage }}</div>
+  }
+
+  @if (bulkSuccessMessage) {
+    <div class="alert success-message">{{ bulkSuccessMessage }}</div>
+  }
+
+  <div class="create-form">
+    <div class="input-group">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+      <button type="button" class="btn-copy-sample" (click)="fillWithSample()" style="cursor: pointer; background: none; border: none; color: #007bff; text-decoration: underline;">
+        Minta JSON beillesztése
+      </button>
+    </div>
+
+    <textarea
+      id="bulkJson"
+      name="bulkJson"
+      rows="10"
+      [(ngModel)]="bulkJson"
+      placeholder="Ide illeszd be vagy gépeld be a JSON tömböt..."
+    ></textarea>
+  </div>
+
+    <div class="form-buttons">
+      <button type="button" class="btn-save" [disabled]="isBulkSaving" (click)="createManyWorkshops()">
+        {{ isBulkSaving ? 'Mentés...' : 'Tömeges létrehozás' }}
+      </button>
+
+      <button type="button" class="btn-cancel" (click)="cancelBulk()">
+        Mégse
+      </button>
+    </div>
+  </div>
+</div>

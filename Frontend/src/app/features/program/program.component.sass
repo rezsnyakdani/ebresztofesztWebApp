@@ -1,76 +1,84 @@
 .program-container
-  padding: 20px
-  padding-top: 40px
+  padding: 32px 24px
+  max-width: 860px
+  margin: 0 auto
 
-.page-title
-  color: #28164A // Sötétlila
-  font-size: 28px
-  margin-bottom: 24px
-  font-weight: 700
+  @media (max-width: 768px)
+    padding: 16px 12px
+
+.loading-text, .empty-text
+  color: #888888
+  font-size: 15px
+
+.error-text
+  color: #D32F2F
+  font-size: 15px
 
 .day-section
-  margin-bottom: 36px
-
-.day-title
-  color: #19A7A6 // Ciánkék a napok kiemelésére
-  font-size: 22px
-  margin-bottom: 20px
-  border-bottom: 2px solid #e0e0e0
-  padding-bottom: 8px
-  font-weight: 600
-
-// Az idővonal (timeline) alapja
-.timeline
-  position: relative
-  padding-left: 24px // Helyet hagyunk a vonalnak bal oldalt
-
-  // A függőleges vonal
-  &::before
-    content: ''
-    position: absolute
-    left: 5px
-    top: 8px
-    bottom: 0
-    width: 2px
-    background-color: #D91668 // Magenta vonal
-
-.timeline-item
-  position: relative
+  background-color: #ffffff
+  border-radius: 14px
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07)
+  padding: 24px 28px
   margin-bottom: 24px
 
-  // Az idővonalon lévő pöttyök
-  &::before
-    content: ''
-    position: absolute
-    left: -24.5px
-    top: 5px
-    width: 12px
-    height: 12px
-    border-radius: 50%
-    background-color: #D91668 // Magenta pötty
-    border: 2px solid #ffffff // Fehér keret, hogy kiugorjon a vonalból
-    box-shadow: 0 0 0 1px #D91668 // Egy extra apró keret a szép dizájnért
+  @media (max-width: 480px)
+    padding: 18px 16px
+
+.day-header
+  display: flex
+  align-items: baseline
+  gap: 12px
+  margin-bottom: 16px
+  padding-bottom: 12px
+  border-bottom: 2px solid #f0ecfa
+
+.day-title
+  color: #D91668
+  font-size: 20px
+  font-weight: 700
+  margin: 0
+
+.day-date
+  color: #888888
+  font-size: 14px
+  font-weight: 400
+
+.timeline-item
+  display: flex
+  align-items: baseline
+  gap: 14px
+  padding: 10px 0
+  border-bottom: 1px solid #f5f5f5
+
+  &:last-child
+    border-bottom: none
+    padding-bottom: 0
 
 .time
-  font-size: 14px
+  font-size: 13px
   font-weight: 700
-  color: #28164A // Sötétlila az időpontnak
-  margin-bottom: 4px
+  color: #28164A
+  white-space: nowrap
+  min-width: 110px
+
+.event-block
+  display: flex
+  flex-direction: column
+  gap: 3px
 
 .event
-  font-size: 16px
-  color: #444444
+  font-size: 15px
+  color: #333333
   line-height: 1.4
   font-weight: 500
 
 .location
   font-size: 13px
   color: #888888
-  margin-top: 4px
   display: flex
   align-items: center
-  gap: 4px
+  gap: 3px
 
   .material-icons
     font-size: 14px
-    color: #19A7A6 // Kis ciánkék helyszín ikon
+    color: #19A7A6
