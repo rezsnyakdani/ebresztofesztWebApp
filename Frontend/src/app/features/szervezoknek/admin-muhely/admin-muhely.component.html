@@ -26,6 +26,8 @@
           <th class="col-sortable" (click)="toggleSort('minAge')">Min. életkor <span class="sort-icon">{{ sortIcon('minAge') }}</span></th>
           <th class="col-sortable" (click)="toggleSort('maxAge')">Max. életkor <span class="sort-icon">{{ sortIcon('maxAge') }}</span></th>
           <th class="col-sortable" (click)="toggleSort('targetGender')">Célzott nem <span class="sort-icon">{{ sortIcon('targetGender') }}</span></th>
+          <th>Jel. kezdete</th>
+          <th>Jel. vége</th>
           <th>Résztvevők</th>
           <th></th>
           <th></th>
@@ -50,6 +52,8 @@
                 <td>{{ session.minAge ?? '-' }}</td>
                 <td>{{ session.maxAge ?? '-' }}</td>
                 <td>{{ session.targetGender ?? '-' }}</td>
+                <td>{{ session.startRegistration ? (session.startRegistration | date:'yyyy.MM.dd. HH:mm') : '-' }}</td>
+                <td>{{ session.endRegistration ? (session.endRegistration | date:'yyyy.MM.dd. HH:mm') : '-' }}</td>
                 <td>
                   <button type="button" class="btn-participants" (click)="viewParticipants(workshop, session)">Résztvevők</button>
                 </td>
@@ -69,7 +73,7 @@
               <td>{{ workshop.title }}</td>
               <td>{{ workshop.lecturer }}</td>
               <td class="desc-cell"><div class="desc-text">{{ workshop.description }}</div></td>
-              <td colspan="8">Nincs hozzá rendelt alkalom</td>
+              <td colspan="10">Nincs hozzá rendelt alkalom</td>
               <td></td>
               <td>
                 <button type="button" class="btn-edit" (click)="startEdit(workshop)">Szerkesztés</button>
@@ -193,6 +197,16 @@
         <div class="input-group">
           <label for="targetGender-{{i}}">Célzott nem</label>
           <input type="text" id="targetGender-{{i}}" name="targetGender-{{i}}" [(ngModel)]="session.targetGender" placeholder="Pl. Férfi, Nő, vagy hagyd üresen">
+        </div>
+
+        <div class="input-group">
+          <label for="startRegistration-{{i}}">Jelentkezés kezdete (nem kötelező)</label>
+          <input type="datetime-local" id="startRegistration-{{i}}" name="startRegistration-{{i}}" [(ngModel)]="session.startRegistration">
+        </div>
+
+        <div class="input-group">
+          <label for="endRegistration-{{i}}">Jelentkezés vége (nem kötelező)</label>
+          <input type="datetime-local" id="endRegistration-{{i}}" name="endRegistration-{{i}}" [(ngModel)]="session.endRegistration">
         </div>
 
         <button type="button" class="btn-remove-session" (click)="removeSession(i)">

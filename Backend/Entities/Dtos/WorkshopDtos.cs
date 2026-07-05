@@ -12,6 +12,8 @@ namespace Entities.Dtos
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public string? TargetGender { get; set; }
+        public DateTime? StartRegistration { get; set; }
+        public DateTime? EndRegistration { get; set; }
     }
 
     public class WorkshopCreateDto
@@ -32,6 +34,8 @@ namespace Entities.Dtos
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public string? TargetGender { get; set; }
+        public DateTime? StartRegistration { get; set; }
+        public DateTime? EndRegistration { get; set; }
     }
 
     public class WorkshopUpdateDto
@@ -52,6 +56,8 @@ namespace Entities.Dtos
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public string? TargetGender { get; set; }
+        public DateTime? StartRegistration { get; set; }
+        public DateTime? EndRegistration { get; set; }
         public List<RegistrationParticipantDto> Participants { get; set; } = new();
     }
 

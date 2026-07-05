@@ -42,6 +42,28 @@ namespace Logic.Logics
             }
         }
 
+        private static DateTime GetHungarianNow()
+        {
+            TimeZoneInfo tz;
+            try { tz = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"); }
+            catch { tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Budapest"); }
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+        }
+
+        private static void CheckRegistrationWindow(WorkshopSession session, string userRole, string action)
+        {
+            if (userRole == "Szervező") return;
+            if (!session.StartRegistration.HasValue || !session.EndRegistration.HasValue) return;
+
+            DateTime now = GetHungarianNow();
+            if (now >= session.StartRegistration.Value && now <= session.EndRegistration.Value) return;
+
+            string sessionInfo = $"{session.Workshop.Title} ({session.StartTime:yyyy.MM.dd. HH:mm})";
+            string regStart = session.StartRegistration.Value.ToString("yyyy.MM.dd. HH:mm");
+            string regEnd = session.EndRegistration.Value.ToString("yyyy.MM.dd. HH:mm");
+            throw new BadRequestException($"Nem tudtál {action} a {sessionInfo} műhelyre, mert a jelentkezési időszak {regStart} - {regEnd} között van.");
+        }
+
         public async Task<List<WorkshopRegistrationGetDto>> GetAllAsync(string userRole)
         {
             if (userRole != "Szervező") throw new ForbiddenException("Csak szervezők kérhetik le a teljes listát!");
@@ -82,6 +104,8 @@ namespace Logic.Logics
                 .FirstOrDefaultAsync(s => s.Id == dto.WorkshopSessionId);
 
             if (session == null) throw new NotFoundException("A műhely-alkalom nem található!");
+
+            CheckRegistrationWindow(session, userRole, "jelentkezni");
 
             string sessionInfo = $"{session.Workshop.Title} ({session.StartTime:yyyy.MM.dd. HH:mm})";
             string errorPrefix = $"Nem tudtál jelentkezni a {sessionInfo} műhelyre, mert ";
@@ -137,10 +161,14 @@ namespace Logic.Logics
 
         public async Task DeleteAsync(string id, string currentUserId, string userRole)
         {
-            var registration = await _regRepo.GetOneAsync(id);
+            var registration = await _regRepo.GetAll()
+                .Include(r => r.WorkshopSession)
+                    .ThenInclude(s => s.Workshop)
+                .FirstOrDefaultAsync(r => r.Id == id);
             if (registration == null) throw new NotFoundException("A jelentkezés nem található.");
 
             CheckAuthorization(registration.ProfileId, currentUserId, userRole);
+            CheckRegistrationWindow(registration.WorkshopSession, userRole, "lejelentkezni");
 
             await _regRepo.DeleteByIdAsync(id);
             await _hubContext.Clients.All.SendAsync("WorkshopsChanged");

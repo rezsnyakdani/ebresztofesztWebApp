@@ -5,7 +5,7 @@ namespace Logic.Logics
 {
     public class WorkshopSessionLogic
     {
-        public void ValidateSessionData(DateTime startTime, DateTime endTime, string place, int capacity, int? minAge, int? maxAge, string? targetGender)
+        public void ValidateSessionData(DateTime startTime, DateTime endTime, string place, int capacity, int? minAge, int? maxAge, string? targetGender, DateTime? startRegistration = null, DateTime? endRegistration = null)
         {
             if (string.IsNullOrWhiteSpace(place)) throw new BadRequestException("A helyszín megadása kötelező!");
             if (startTime == default || endTime == default) throw new BadRequestException("A kezdési és befejezési időpontok megadása kötelező!");
@@ -22,6 +22,13 @@ namespace Logic.Logics
 
             if (minAge.HasValue && maxAge.HasValue && minAge >= maxAge)
                 throw new BadRequestException("Az alsó korhatárnak kisebbnek kell lennie a felső korhatárnál!");
+
+            if (startRegistration.HasValue && !endRegistration.HasValue)
+                throw new BadRequestException("A jelentkezési időszak végét is meg kell adni, ha a kezdete meg van adva!");
+            if (!startRegistration.HasValue && endRegistration.HasValue)
+                throw new BadRequestException("A jelentkezési időszak kezdetét is meg kell adni, ha a vége meg van adva!");
+            if (startRegistration.HasValue && endRegistration.HasValue && startRegistration >= endRegistration)
+                throw new BadRequestException("A jelentkezési időszak kezdetének korábbinak kell lennie a végénél!");
         }
     }
 }

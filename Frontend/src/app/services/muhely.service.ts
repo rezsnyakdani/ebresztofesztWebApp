@@ -14,6 +14,8 @@ export interface WorkshopSessionCreateDto {
   minAge?: number | null;
   maxAge?: number | null;
   targetGender?: string | null;
+  startRegistration?: string | null;
+  endRegistration?: string | null;
 }
 
 export interface WorkshopSessionUpdateDto {
@@ -25,6 +27,8 @@ export interface WorkshopSessionUpdateDto {
   minAge?: number | null;
   maxAge?: number | null;
   targetGender?: string | null;
+  startRegistration?: string | null;
+  endRegistration?: string | null;
 }
 
 export interface RegistrationParticipantDto {
@@ -42,6 +46,8 @@ export interface WorkshopSessionGetDto {
   minAge?: number | null;
   maxAge?: number | null;
   targetGender?: string | null;
+  startRegistration?: string | null;
+  endRegistration?: string | null;
   participants: RegistrationParticipantDto[];
 }
 

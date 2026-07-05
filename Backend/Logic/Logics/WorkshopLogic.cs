@@ -75,7 +75,7 @@ namespace Logic.Logics
 
             foreach (var sDto in dto.Sessions)
             {
-                _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender);
+                _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender, sDto.StartRegistration, sDto.EndRegistration);
             }
 
             var workshop = _mapper.Map<Workshop>(dto);
@@ -112,7 +112,7 @@ namespace Logic.Logics
 
             foreach (var sDto in dto.Sessions)
             {
-                _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender);
+                _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender, sDto.StartRegistration, sDto.EndRegistration);
 
                 if (string.IsNullOrEmpty(sDto.Id))
                 {
@@ -158,7 +158,7 @@ namespace Logic.Logics
 
                 foreach (var sDto in dto.Sessions)
                 {
-                    _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender);
+                    _sessionLogic.ValidateSessionData(sDto.StartTime, sDto.EndTime, sDto.Place, sDto.Capacity, sDto.MinAge, sDto.MaxAge, sDto.TargetGender, sDto.StartRegistration, sDto.EndRegistration);
                 }
 
                 workshopsToCreate.Add(_mapper.Map<Workshop>(dto));

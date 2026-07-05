@@ -19,6 +19,8 @@ namespace Entities.Models
         public int? MinAge { get; set; }
         public int? MaxAge { get; set; }
         public string? TargetGender { get; set; }
+        public DateTime? StartRegistration { get; set; }
+        public DateTime? EndRegistration { get; set; }
 
         public Workshop Workshop { get; set; } = null!;
         public ICollection<WorkshopRegistration> Registrations { get; set; } = new List<WorkshopRegistration>();

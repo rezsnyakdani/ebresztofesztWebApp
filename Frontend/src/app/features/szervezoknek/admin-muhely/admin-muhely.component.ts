@@ -365,7 +365,9 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
             capacity: s.capacity,
             minAge: s.minAge ?? null,
             maxAge: s.maxAge ?? null,
-            targetGender: s.targetGender ?? null
+            targetGender: s.targetGender ?? null,
+            startRegistration: s.startRegistration ? s.startRegistration.substring(0, 16) : null,
+            endRegistration: s.endRegistration ? s.endRegistration.substring(0, 16) : null
           }))
         : [this.getUresSession()]
     };
@@ -449,7 +451,9 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
         "capacity": 30,
         "minAge": 16,
         "maxAge": null,
-        "targetGender": null
+        "targetGender": null,
+        "startRegistration": null,
+        "endRegistration": null
       }
     ]
   },
@@ -470,7 +474,9 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
       ...this.newWorkshop,
       sessions: this.newWorkshop.sessions.map(s => ({
         ...s,
-        targetGender: s.targetGender ? s.targetGender : null
+        targetGender: s.targetGender ? s.targetGender : null,
+        startRegistration: s.startRegistration ? s.startRegistration : null,
+        endRegistration: s.endRegistration ? s.endRegistration : null,
       }))
     };
   }
@@ -492,7 +498,9 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
       capacity: 0,
       minAge: null,
       maxAge: null,
-      targetGender: null
+      targetGender: null,
+      startRegistration: null,
+      endRegistration: null
     };
   }
 }
