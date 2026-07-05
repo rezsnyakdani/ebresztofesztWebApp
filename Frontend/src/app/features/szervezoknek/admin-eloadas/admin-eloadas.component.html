@@ -14,10 +14,11 @@
       <table class="eloadas-table">
         <thead>
           <tr>
-            <th>Előadó neve</th>
+            <th class="col-serial">#</th>
+            <th class="col-sortable" (click)="toggleSort('lecturerName')">Előadó neve <span class="sort-icon">{{ sortIcon('lecturerName') }}</span></th>
             <th>Leírás</th>
             <th>Nap</th>
-            <th>Kezdés</th>
+            <th class="col-sortable" (click)="toggleSort('startTime')">Kezdés <span class="sort-icon">{{ sortIcon('startTime') }}</span></th>
             <th>Befejezés</th>
             <th>Kép</th>
             <th></th>
@@ -25,8 +26,9 @@
           </tr>
         </thead>
         <tbody>
-          @for (lecture of lectures; track lecture.id; let i = $index) {
+          @for (lecture of sortedLectures; track lecture.id; let i = $index) {
             <tr [class.row-alt]="i % 2 === 1">
+              <td class="col-serial">{{ i + 1 }}</td>
               <td>{{ lecture.lecturerName }}</td>
               <td class="desc-cell"><div class="desc-text">{{ lecture.description }}</div></td>
               <td>{{ getNapNev(lecture.startTime) }}</td>

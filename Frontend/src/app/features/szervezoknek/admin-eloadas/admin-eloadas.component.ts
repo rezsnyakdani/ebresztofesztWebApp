@@ -21,6 +21,34 @@ export class AdminEloadasComponent implements OnInit, OnDestroy, AfterViewChecke
   isLoading = false;
   errorMessage = '';
 
+  sortColumn: string | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
+
+  get sortedLectures(): LectureGetDto[] {
+    if (!this.sortColumn) return this.lectures;
+    const col = this.sortColumn;
+    return [...this.lectures].sort((a, b) => {
+      const va = (a as unknown as Record<string, unknown>)[col] ?? '';
+      const vb = (b as unknown as Record<string, unknown>)[col] ?? '';
+      const cmp = String(va).localeCompare(String(vb), 'hu', { numeric: true });
+      return this.sortDir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  toggleSort(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDir = 'asc';
+    }
+  }
+
+  sortIcon(column: string): string {
+    if (this.sortColumn !== column) return '↕';
+    return this.sortDir === 'asc' ? '↑' : '↓';
+  }
+
   newLecture = this.getUresLecture();
   selectedFile: File | null = null;
   currentImageUrl: string | null = null;
