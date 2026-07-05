@@ -14,24 +14,28 @@
       <table class="profil-table">
         <thead>
           <tr>
-            <th>Név</th>
-            <th>Email</th>
-            <th>Szerepkör</th>
-            <th>Születési dátum</th>
-            <th>Nem</th>
-            <th>Jelentkezések</th>
+            <th class="col-serial">#</th>
+            <th class="col-sortable" (click)="toggleSort('name')">Név <span class="sort-icon">{{ sortIcon('name') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('email')">Email <span class="sort-icon">{{ sortIcon('email') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('role')">Szerepkör <span class="sort-icon">{{ sortIcon('role') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('birthDate')">Születési dátum <span class="sort-icon">{{ sortIcon('birthDate') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('gender')">Nem <span class="sort-icon">{{ sortIcon('gender') }}</span></th>
+            <th class="col-sortable" (click)="toggleSort('registrationCount')">Jel. db <span class="sort-icon">{{ sortIcon('registrationCount') }}</span></th>
+            <th></th>
             <th></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          @for (profile of profiles; track profile.id; let pi = $index) {
-            <tr [class.row-alt]="pi % 2 === 1">
+          @for (profile of sortedProfiles; track profile.id; let i = $index) {
+            <tr [class.row-alt]="i % 2 === 1">
+              <td class="col-serial">{{ i + 1 }}</td>
               <td>{{ profile.name }}</td>
               <td>{{ profile.email }}</td>
               <td>{{ profile.role }}</td>
               <td>{{ profile.birthDate | date:'yyyy.MM.dd' }}</td>
               <td>{{ profile.gender }}</td>
+              <td class="col-count">{{ getRegistrationCount(profile.id) }}</td>
               <td>
                 <button type="button" class="btn-registrations" (click)="viewRegistrations(profile)">Jelentkezések</button>
               </td>

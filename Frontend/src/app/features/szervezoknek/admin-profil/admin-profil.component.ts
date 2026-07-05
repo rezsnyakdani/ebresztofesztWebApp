@@ -4,6 +4,8 @@ import { ProfilService, ProfileGetAllDto, ProfileCreateDto } from '../../../serv
 import { MuhelyService, WorkshopGetDto, WorkshopRegistrationGetDto, WorkshopSessionGetDto } from '../../../services/muhely.service';
 import { SignalrService } from '../../../services/signalr.service';
 
+export type ProfileRow = ProfileGetAllDto;
+
 @Component({
   selector: 'app-admin-profil',
   standalone: false,
@@ -18,9 +20,48 @@ export class AdminProfilComponent implements OnInit, OnDestroy, AfterViewChecked
   private pendingScroll: 'registrations' | 'createForm' | 'bulkForm' | 'top' | null = null;
   private signalrSub = new Subscription();
 
-  profiles: ProfileGetAllDto[] = [];
+  profiles: ProfileRow[] = [];
   isLoading = false;
   errorMessage = '';
+
+  registrationCountMap = new Map<string, number>();
+  sortColumn: string | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
+
+  get sortedProfiles(): ProfileRow[] {
+    if (!this.sortColumn) return this.profiles;
+    const col = this.sortColumn;
+    return [...this.profiles].sort((a, b) => {
+      let va: unknown = (a as unknown as Record<string, unknown>)[col];
+      let vb: unknown = (b as unknown as Record<string, unknown>)[col];
+      if (col === 'registrationCount') {
+        va = this.registrationCountMap.get(a.id) ?? 0;
+        vb = this.registrationCountMap.get(b.id) ?? 0;
+      }
+      if (va == null) va = '';
+      if (vb == null) vb = '';
+      const cmp = String(va).localeCompare(String(vb), 'hu', { numeric: true });
+      return this.sortDir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  toggleSort(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDir = 'asc';
+    }
+  }
+
+  sortIcon(column: string): string {
+    if (this.sortColumn !== column) return '↕';
+    return this.sortDir === 'asc' ? '↑' : '↓';
+  }
+
+  getRegistrationCount(profileId: string): number {
+    return this.registrationCountMap.get(profileId) ?? 0;
+  }
 
   newProfile: ProfileCreateDto = this.getUresProfil();
   isSaving = false;
@@ -52,12 +93,15 @@ export class AdminProfilComponent implements OnInit, OnDestroy, AfterViewChecked
   ngOnInit(): void {
     this.loadProfiles();
     this.loadWorkshops();
+    this.loadRegistrationCounts();
     this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => {
       this.loadProfiles();
+      this.loadRegistrationCounts();
       this.syncRegistrationsPanel();
     }));
     this.signalrSub.add(this.signalrService.workshopsChanged$.subscribe(() => {
       this.loadWorkshops();
+      this.loadRegistrationCounts();
       if (this.selectedProfile) this.refreshRegistrations();
     }));
   }
@@ -107,6 +151,19 @@ export class AdminProfilComponent implements OnInit, OnDestroy, AfterViewChecked
         this.errorMessage = err.message;
         this.isLoading = false;
       }
+    });
+  }
+
+  loadRegistrationCounts(): void {
+    this.muhelyService.getAllRegistrations().subscribe({
+      next: (regs) => {
+        const map = new Map<string, number>();
+        for (const reg of regs) {
+          map.set(reg.profileId, (map.get(reg.profileId) ?? 0) + 1);
+        }
+        this.registrationCountMap = map;
+      },
+      error: () => {}
     });
   }
 
