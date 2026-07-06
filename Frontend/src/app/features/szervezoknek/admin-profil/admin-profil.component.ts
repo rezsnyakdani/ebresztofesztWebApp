@@ -104,6 +104,10 @@ export class AdminProfilComponent implements OnInit, OnDestroy, AfterViewChecked
       this.loadRegistrationCounts();
       if (this.selectedProfile) this.refreshRegistrations();
     }));
+    this.signalrSub.add(this.signalrService.sessionRegistrationChanged$.subscribe(() => {
+      this.loadRegistrationCounts();
+      if (this.selectedProfile) this.refreshRegistrations();
+    }));
   }
 
   ngAfterViewChecked(): void {

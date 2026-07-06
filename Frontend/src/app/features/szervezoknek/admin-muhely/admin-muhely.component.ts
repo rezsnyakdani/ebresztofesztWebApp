@@ -88,6 +88,15 @@ export class AdminMuhelyComponent implements OnInit, OnDestroy, AfterViewChecked
     this.loadWorkshops();
     this.loadProfiles();
     this.signalrSub.add(this.signalrService.workshopsChanged$.subscribe(() => this.loadWorkshops()));
+    this.signalrSub.add(this.signalrService.sessionRegistrationChanged$.subscribe(data => {
+      for (const workshop of this.workshops) {
+        const session = workshop.sessions.find(s => s.id === data.sessionId);
+        if (session) {
+          session.participants = data.participants;
+          break;
+        }
+      }
+    }));
     this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => {
       this.loadWorkshops();
       this.loadProfiles();
