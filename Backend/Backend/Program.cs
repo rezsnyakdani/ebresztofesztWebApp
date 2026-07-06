@@ -133,8 +133,6 @@ namespace Backend
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            app.MapGet("/", () => Results.Redirect("/swagger")).AllowAnonymous();
-
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
@@ -147,6 +145,7 @@ namespace Backend
 
             app.MapControllers();
             app.MapHub<AppHub>("/hubs/app");
+            app.MapFallbackToFile("index.html");
 
             app.Run();
         }

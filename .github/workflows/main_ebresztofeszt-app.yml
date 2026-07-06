@@ -18,12 +18,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Angular dependencies
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: Frontend
+        run: npm run build
+
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      # Itt adtuk hozzá a working-directory-t, ez a legfontosabb módosítás
+      - name: Copy Angular build to wwwroot
+        run: |
+          mkdir -p Backend/Backend/wwwroot
+          cp -r Frontend/dist/frontend/browser/. Backend/Backend/wwwroot/
+
       - name: Build with dotnet
         working-directory: Backend
         run: dotnet build --configuration Release
@@ -33,7 +50,7 @@ jobs:
         run: |
           rm -rf ./publish
           dotnet publish Backend/Backend.csproj -c Release -o ./publish
-      # Az artifact path-t is frissítettük a Backend/publish mappára
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -52,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
