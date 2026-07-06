@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://vegleges-domained.hu/api',
-    hubUrl: 'https://vegleges-domained.hu/hubs/app'
+    apiUrl: 'https://ebresztofeszt-app-arbphrcfg7bddebx.polandcentral-01.azurewebsites.net/api',
+    hubUrl: 'https://ebresztofeszt-app-arbphrcfg7bddebx.polandcentral-01.azurewebsites.net/hubs/app'
 };

@@ -1,0 +1,86 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - ebresztofeszt-app
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Angular dependencies
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: Frontend
+        run: npm run build
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Copy Angular build to wwwroot
+        run: |
+          mkdir -p Backend/Backend/wwwroot
+          cp -r Frontend/dist/frontend/browser/. Backend/Backend/wwwroot/
+
+      - name: Build with dotnet
+        working-directory: Backend
+        run: dotnet build --configuration Release
+
+      - name: dotnet publish
+        working-directory: Backend
+        run: |
+          rm -rf ./publish
+          dotnet publish Backend/Backend.csproj -c Release -o ./publish
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: Backend/publish
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_211F69FBCEA34C0EACE0BED89924BACE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5A1A1A37518641C0A471F809A2930CF8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_318C03E93B7449C09457279D189E953D }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'ebresztofeszt-app'
+          slot-name: 'Production'
+          package: .

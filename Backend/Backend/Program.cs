@@ -26,12 +26,15 @@ namespace Backend
 
             builder.Services.AddSignalR();
 
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                ?? new[] { "http://localhost:4200" };
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngularFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:4200")
+                        policy.WithOrigins(allowedOrigins)
                               .AllowAnyHeader()
                               .AllowAnyMethod()
                               .AllowCredentials();
@@ -127,11 +130,8 @@ namespace Backend
             app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 
@@ -145,6 +145,7 @@ namespace Backend
 
             app.MapControllers();
             app.MapHub<AppHub>("/hubs/app");
+            app.MapFallbackToFile("index.html");
 
             app.Run();
         }
