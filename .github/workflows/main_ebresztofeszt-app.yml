@@ -30,8 +30,9 @@ jobs:
 
       - name: dotnet publish
         working-directory: Backend
-        run: dotnet publish -c Release -o ./publish
-
+        run: |
+          rm -rf ./publish
+          dotnet publish -c Release -o ./publish
       # Az artifact path-t is frissítettük a Backend/publish mappára
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
