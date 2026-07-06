@@ -78,6 +78,11 @@ export interface WorkshopRegistrationCreateDto {
   workshopSessionId: string;
 }
 
+export interface SessionRegistrationChangedDto {
+  sessionId: string;
+  participants: RegistrationParticipantDto[];
+}
+
 export interface WorkshopRegistrationGetDto {
   id: string;
   profileId: string;

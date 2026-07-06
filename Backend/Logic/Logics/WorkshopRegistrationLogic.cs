@@ -155,7 +155,23 @@ namespace Logic.Logics
                 .FirstOrDefaultAsync(r => r.Id == registration.Id);
 
             var result = _mapper.Map<WorkshopRegistrationGetDto>(createdFull);
-            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+
+            var updatedSession = await _sessionRepo.GetAll()
+                .Include(s => s.Registrations)
+                    .ThenInclude(r => r.Profile)
+                .FirstOrDefaultAsync(s => s.Id == dto.WorkshopSessionId);
+            if (updatedSession != null)
+            {
+                var payload = new SessionRegistrationChangedDto
+                {
+                    SessionId = updatedSession.Id,
+                    Participants = updatedSession.Registrations
+                        .Select(r => new RegistrationParticipantDto { RegistrationId = r.Id, Name = r.Profile.Name })
+                        .ToList()
+                };
+                await _hubContext.Clients.All.SendAsync("SessionRegistrationChanged", payload);
+            }
+
             return result;
         }
 
@@ -170,8 +186,24 @@ namespace Logic.Logics
             CheckAuthorization(registration.ProfileId, currentUserId, userRole);
             CheckRegistrationWindow(registration.WorkshopSession, userRole, "lejelentkezni");
 
+            string sessionId = registration.WorkshopSessionId;
             await _regRepo.DeleteByIdAsync(id);
-            await _hubContext.Clients.All.SendAsync("WorkshopsChanged");
+
+            var updatedSession = await _sessionRepo.GetAll()
+                .Include(s => s.Registrations)
+                    .ThenInclude(r => r.Profile)
+                .FirstOrDefaultAsync(s => s.Id == sessionId);
+            if (updatedSession != null)
+            {
+                var payload = new SessionRegistrationChangedDto
+                {
+                    SessionId = updatedSession.Id,
+                    Participants = updatedSession.Registrations
+                        .Select(r => new RegistrationParticipantDto { RegistrationId = r.Id, Name = r.Profile.Name })
+                        .ToList()
+                };
+                await _hubContext.Clients.All.SendAsync("SessionRegistrationChanged", payload);
+            }
         }
     }
 }

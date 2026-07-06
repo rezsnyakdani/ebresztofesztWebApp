@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { SessionRegistrationChangedDto } from './muhely.service';
 
 @Injectable({ providedIn: 'root' })
 export class SignalrService {
   private hubConnection!: signalR.HubConnection;
 
   public workshopsChanged$ = new Subject<void>();
+  public sessionRegistrationChanged$ = new Subject<SessionRegistrationChangedDto>();
   public profilesChanged$ = new Subject<void>();
   public lecturesChanged$ = new Subject<void>();
   public infoBlocksChanged$ = new Subject<void>();
@@ -32,6 +34,11 @@ export class SignalrService {
     this.hubConnection.on('WorkshopsChanged', () => {
       console.log('SignalR: WorkshopsChanged esemény érkezett.');
       this.workshopsChanged$.next();
+    });
+
+    this.hubConnection.on('SessionRegistrationChanged', (data: SessionRegistrationChangedDto) => {
+      console.log('SignalR: SessionRegistrationChanged esemény érkezett.', data);
+      this.sessionRegistrationChanged$.next(data);
     });
 
     this.hubConnection.on('ProfilesChanged', () => {

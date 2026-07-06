@@ -44,6 +44,16 @@ export class MuhelyComponent implements OnInit, OnDestroy {
     this.loadAll();
 
     this.signalrSub.add(this.signalrService.workshopsChanged$.subscribe(() => this.loadAll()));
+    this.signalrSub.add(this.signalrService.sessionRegistrationChanged$.subscribe(data => {
+      for (const workshop of this.workshops) {
+        const session = workshop.sessions.find(s => s.id === data.sessionId);
+        if (session) {
+          session.participants = data.participants;
+          break;
+        }
+      }
+      if (this.isLoggedIn && this.userId) this.loadMyRegistrations();
+    }));
     this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => {
       if (this.isLoggedIn && this.userId) this.loadMyRegistrations();
     }));

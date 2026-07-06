@@ -58,6 +58,7 @@ export class ProfilComponent implements OnInit, OnDestroy {
 
     this.signalrSub.add(this.signalrService.profilesChanged$.subscribe(() => this.loadProfile()));
     this.signalrSub.add(this.signalrService.workshopsChanged$.subscribe(() => this.loadRegistrations()));
+    this.signalrSub.add(this.signalrService.sessionRegistrationChanged$.subscribe(() => this.loadRegistrations()));
   }
 
   ngOnDestroy(): void {

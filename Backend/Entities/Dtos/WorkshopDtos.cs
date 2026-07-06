@@ -75,4 +75,10 @@ namespace Entities.Dtos
         public string RegistrationId { get; set; } = null!;
         public string Name { get; set; } = null!;
     }
+
+    public class SessionRegistrationChangedDto
+    {
+        public string SessionId { get; set; } = null!;
+        public List<RegistrationParticipantDto> Participants { get; set; } = new();
+    }
 }
